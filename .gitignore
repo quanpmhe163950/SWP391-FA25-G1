@@ -1,2 +1,28 @@
 
-/SWP391-G1/build.xml
+# NetBeans specific
+/nbproject/private/
+/nbproject/ant-deploy.xml
+/nbproject/build-impl.xml
+/nbproject/genfiles.properties
+
+# Build output
+/build/
+/dist/
+/target/
+
+# IDE files
+*.class
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Other IDEs
+.idea/
+/*.iml
+.vscode/
+
+# Dependency caches
+/.gradle/
+/.mvn/
