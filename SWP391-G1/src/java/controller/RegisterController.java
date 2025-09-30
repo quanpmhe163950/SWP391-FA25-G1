@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet("/register")
 public class RegisterController extends HttpServlet {
@@ -25,52 +26,58 @@ public class RegisterController extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmPassword"); // ✅ thêm confirm
-        String fullname = request.getParameter("fullname");
+        String confirmPassword = request.getParameter("confirmPassword");
         String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
+        String fullname = request.getParameter("fullname");
 
-        // 🔹 Validate input
-        if (username == null || username.trim().isEmpty()) {
-            request.setAttribute("error", "Username is required!");
+        // Validate
+        if (username == null || username.isBlank() ||
+            password == null || password.isBlank() ||
+            confirmPassword == null || confirmPassword.isBlank() ||
+            email == null || email.isBlank() ||
+            fullname == null || fullname.isBlank()) {
+            request.setAttribute("error", "All fields are required!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
-        if (password == null || password.trim().isEmpty()) {
-            request.setAttribute("error", "Password cannot be empty or only spaces!");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-            return;
-        }
+
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("error", "Confirm password does not match!");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-            return;
-        }
-        if (phone == null || phone.trim().isEmpty()) {
-            request.setAttribute("error", "Phone number is required!");
+            request.setAttribute("error", "Passwords do not match!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // Email có thể null, không cần validate
+        // Check username/email đã tồn tại chưa
+        if (userDAO.existsByUsername(username)) {
+            request.setAttribute("error", "Username already exists!");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
 
-        // Tạo user mới
-        User newUser = new User();
-        newUser.setUserID(java.util.UUID.randomUUID().toString().substring(0, 8));
-        newUser.setUsername(username.trim());
-        newUser.setPasswordHash(password); // BCrypt xử lý trong DAO
-        newUser.setFullName(fullname);
-        newUser.setEmail((email != null && !email.trim().isEmpty()) ? email : null);
-        newUser.setPhone(phone.trim());
+        if (userDAO.existsByEmail(email)) {
+            request.setAttribute("error", "Email already exists!");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
 
-        // 🔹 Mặc định role = "2" (Customer)
-        newUser.setRoleID(2);
+        // Hash mật khẩu trước khi lưu
+        String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        boolean success = userDAO.register(newUser);
+        User user = new User();
+        user.setUsername(username);
+        user.setPasswordHash(hashed);
+        user.setEmail(email);
+        user.setFullName(fullname);
+        user.setRoleID(2); // default role: customer
+
+        boolean success = userDAO.register(user);
+
         if (success) {
-            response.sendRedirect("login.jsp?msg=register_success");
+            // Đăng ký thành công => sang login
+            response.sendRedirect("login");
         } else {
-            request.setAttribute("error", "Username already exists or registration failed.");
+            // Nếu có lỗi DB hoặc insert fail
+            request.setAttribute("error", "Registration failed, please try again!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

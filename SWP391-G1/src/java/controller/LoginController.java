@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
@@ -27,21 +28,19 @@ public class LoginController extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // 🔹 Validate input
-        if (username == null || username.trim().isEmpty() ||
-            password == null || password.trim().isEmpty()) {
-            request.setAttribute("error", "Username and password cannot be empty or blank!");
+        if (username == null || username.isBlank() ||
+            password == null || password.isBlank()) {
+            request.setAttribute("error", "Username and password cannot be empty!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
 
-        User user = userDAO.login(username, password);
-        if (user != null) {
+        User user = userDAO.findByUsername(username); // lấy user theo username
+        if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
             HttpSession session = request.getSession();
             session.setAttribute("account", user);
 
-            // Role check
-            if ("1".equals(user.getRoleID())) {
+            if (user.getRoleID() == 1) {
                 response.sendRedirect("admin/home.jsp");
             } else {
                 response.sendRedirect("home.jsp");
