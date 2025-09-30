@@ -5,6 +5,7 @@
         <group>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/DBContext.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/login.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/LoginController.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/RegisterController.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/User.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/register.jsp</file>
