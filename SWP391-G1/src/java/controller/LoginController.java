@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.UUID;
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -35,15 +36,21 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        User user = userDAO.findByUsername(username); // lấy user theo username
+        User user = userDAO.findByUsername(username);
+
         if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
             HttpSession session = request.getSession();
             session.setAttribute("account", user);
 
+            // Tạo token ngẫu nhiên để authorize
+            String token = UUID.randomUUID().toString();
+            session.setAttribute("authToken", token);
+
+            // Redirect theo role
             if (user.getRoleID() == 1) {
                 response.sendRedirect("admin/home.jsp");
             } else {
-                response.sendRedirect("home.jsp");
+                response.sendRedirect("HomePage.jsp");
             }
         } else {
             request.setAttribute("error", "Invalid username or password!");
