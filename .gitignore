@@ -26,3 +26,5 @@ Thumbs.db
 # Dependency caches
 /.gradle/
 /.mvn/
+/SWP391-G1/build/
+/SWP391-G1/dist/
