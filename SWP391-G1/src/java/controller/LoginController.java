@@ -1,6 +1,6 @@
 package controller;
 
-import dal.UserDAO;
+import dal.UsersDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,7 +15,7 @@ import org.mindrot.jbcrypt.BCrypt;
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDao userDAO = new UsersDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
