@@ -1,19 +1,20 @@
 package controller;
 
-import dal.UserDAO;
+import dal.UsersDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet("/register")
 public class RegisterController extends HttpServlet {
 
-    private final UserDAO userDAO = new UserDAO();
+    private final UserDao userDAO = new UsersDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -29,25 +30,36 @@ public class RegisterController extends HttpServlet {
         String confirmPassword = request.getParameter("confirmPassword");
         String email = request.getParameter("email");
         String fullname = request.getParameter("fullname");
+        String phone = request.getParameter("phone");
 
-        // Validate
+        // Validate rỗng
         if (username == null || username.isBlank() ||
             password == null || password.isBlank() ||
             confirmPassword == null || confirmPassword.isBlank() ||
             email == null || email.isBlank() ||
-            fullname == null || fullname.isBlank()) {
+            fullname == null || fullname.isBlank() ||
+            phone == null || phone.isBlank()) {
             request.setAttribute("error", "All fields are required!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
+        // Validate confirm password
         if (!password.equals(confirmPassword)) {
             request.setAttribute("error", "Passwords do not match!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // Check username/email đã tồn tại chưa
+        // Validate mật khẩu: ít nhất 6 ký tự, có chữ và số, không khoảng trắng
+        String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$";
+        if (!Pattern.matches(passwordPattern, password)) {
+            request.setAttribute("error", "Password must be at least 6 characters, include letters and numbers, and contain no spaces.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // Check username/email tồn tại
         if (userDAO.existsByUsername(username)) {
             request.setAttribute("error", "Username already exists!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
@@ -60,7 +72,7 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
-        // Hash mật khẩu trước khi lưu
+        // Hash mật khẩu
         String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
 
         User user = new User();
@@ -68,15 +80,14 @@ public class RegisterController extends HttpServlet {
         user.setPasswordHash(hashed);
         user.setEmail(email);
         user.setFullName(fullname);
-        user.setRoleID(2); // default role: customer
+        user.setPhone(phone);
+        user.setRoleID(2); // default: customer
 
         boolean success = userDAO.register(user);
 
         if (success) {
-            // Đăng ký thành công => sang login
             response.sendRedirect("login");
         } else {
-            // Nếu có lỗi DB hoặc insert fail
             request.setAttribute("error", "Registration failed, please try again!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
