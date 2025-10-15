@@ -1,4 +1,3 @@
-
 # NetBeans specific
 /nbproject/private/
 /nbproject/ant-deploy.xml
@@ -28,3 +27,6 @@ Thumbs.db
 /.mvn/
 /SWP391-G1/build/
 /SWP391-G1/dist/
+
+# Ignore database context file (contains credentials)
+**/DBContext.java
