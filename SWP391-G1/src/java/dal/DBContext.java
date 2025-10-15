@@ -11,18 +11,18 @@ public class DBContext {
     private static final String PASS = "123";
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=PizzaManagement;encrypt=false;trustServerCertificate=true";
 
-    private static Connection connection;
+    protected Connection connection; // ⚡ dùng cho DAO
 
-    static {
+    public DBContext() {
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(URL, USER, PASS);
+            System.out.println("✅ Connected to: " + connection.getCatalog());
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    // ✅ Luôn trả về connection đã mở
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {

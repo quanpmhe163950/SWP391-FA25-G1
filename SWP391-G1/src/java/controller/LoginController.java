@@ -15,7 +15,7 @@ import org.mindrot.jbcrypt.BCrypt;
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
 
-    private final UserDao userDAO = new UsersDAO();
+    private final UsersDAO userDAO = new UsersDAO(); // ✅ sửa chữ D thường thành D hoa
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

@@ -1,0 +1,85 @@
+package dal;
+
+import java.sql.*;
+import java.util.*;
+import model.Ingredient;
+
+public class IngredientDAO extends DBContext {
+
+    public List<Ingredient> getAll() {
+        List<Ingredient> list = new ArrayList<>();
+        String sql = "SELECT * FROM Ingredients";
+        try (PreparedStatement st = connection.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                list.add(new Ingredient(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("unit"),
+                    rs.getDouble("quantity"),
+                    rs.getDouble("price")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public Ingredient getById(int id) {
+        String sql = "SELECT * FROM Ingredients WHERE id = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return new Ingredient(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("unit"),
+                    rs.getDouble("quantity"),
+                    rs.getDouble("price")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void insert(Ingredient i) {
+        String sql = "INSERT INTO Ingredients (name, unit, quantity, price) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, i.getName());
+            st.setString(2, i.getUnit());
+            st.setDouble(3, i.getQuantity());
+            st.setDouble(4, i.getPrice());
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void update(Ingredient i) {
+        String sql = "UPDATE Ingredients SET name=?, unit=?, quantity=?, price=? WHERE id=?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, i.getName());
+            st.setString(2, i.getUnit());
+            st.setDouble(3, i.getQuantity());
+            st.setDouble(4, i.getPrice());
+            st.setInt(5, i.getId());
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(int id) {
+        String sql = "DELETE FROM Ingredients WHERE id=?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, id);
+            st.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
