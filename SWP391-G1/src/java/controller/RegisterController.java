@@ -14,7 +14,7 @@ import org.mindrot.jbcrypt.BCrypt;
 @WebServlet("/register")
 public class RegisterController extends HttpServlet {
 
-    private final UserDao userDAO = new UsersDAO();
+    private final UsersDAO userDAO = new UsersDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

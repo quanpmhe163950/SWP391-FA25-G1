@@ -144,15 +144,17 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>Admin Panel</h2>
-        <div class="menu-item">Dashboard</div>
-        <div class="menu-item">User Management</div>
-        <div class="menu-item">Staff Management</div>
-        <div class="menu-item">Suppliers</div>
-        <div class="menu-item">Purchase Orders</div>
-        <div class="menu-item">Inventory</div>
-        <div class="menu-item">Products</div>
-        <div class="menu-item">Recipes</div>
-        <div class="menu-item">Feedback</div>
+        <a class="menu-item" href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
+<a class="menu-item" href="${pageContext.request.contextPath}/admin/account">User Management</a>
+<a class="menu-item" href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
+<a class="menu-item" href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
+
+<div class="menu-item">Suppliers</div>
+<div class="menu-item">Purchase Orders</div>
+<div class="menu-item">Products</div>
+<div class="menu-item">Recipes</div>
+<div class="menu-item">Feedback</div>
+
     </div>
 
     <!-- Main container -->

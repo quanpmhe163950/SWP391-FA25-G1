@@ -1,22 +1,23 @@
 package model;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.sql.Date;
 
 public class User {
     private int userID;
     private String username;
     private String passwordHash;
     private String fullName;
-    private int roleID;   // Có thể thay bằng Role nếu bạn muốn quan hệ object
+    private int roleID;
     private String email;
     private String phone;
-    private Date createDate;
+    private Timestamp createDate;
+    private boolean isActive;
+    private Date startDate; // NEW
 
-    public User() {
-    }
+    public User() {}
 
-    public User(int userID, String username, String passwordHash, String fullName,
-                int roleID, String email, String phone, Date createDate) {
+    public User(int userID, String username, String passwordHash, String fullName, int roleID, String email, String phone, Timestamp createDate, boolean isActive, Date startDate) {
         this.userID = userID;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -25,82 +26,38 @@ public class User {
         this.email = email;
         this.phone = phone;
         this.createDate = createDate;
+        this.isActive = isActive;
+        this.startDate = startDate;
     }
 
-    public int getUserID() {
-        return userID;
-    }
+    // getters/setters
+    public int getUserID() { return userID; }
+    public void setUserID(int userID) { this.userID = userID; }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
+    public int getRoleID() { return roleID; }
+    public void setRoleID(int roleID) { this.roleID = roleID; }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getFullName() {
-        return fullName;
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+    public Timestamp getCreateDate() { return createDate; }
+    public void setCreateDate(Timestamp createDate) { this.createDate = createDate; }
 
-    public int getRoleID() {
-        return roleID;
-    }
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
 
-    public void setRoleID(int roleID) {
-        this.roleID = roleID;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userID='" + userID + '\'' +
-                ", username='" + username + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", roleID='" + roleID + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", createDate=" + createDate +
-                '}';
-    }
+    public Date getStartDate() { return startDate; }
+    public void setStartDate(Date startDate) { this.startDate = startDate; }
 }
