@@ -3,12 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/account_list.jsp</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/DBContext.java</file>
-            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/home.jsp</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/StaffDAO.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/staff_add.jsp</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/StaffController.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/RecipeController.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/account_list.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/home.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/Recipe.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/RecipeDetail.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/RecipeDAO.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/MenuItem.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/IngredientDAO.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/staff_list.jsp</file>
         </group>
     </open-files>
