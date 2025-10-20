@@ -42,7 +42,6 @@
                 border:1px solid #ddd;
                 border-radius:6px;
                 padding:15px;
-
             }
             .edit-info {
                 display:block;
@@ -137,6 +136,50 @@
                 font-size:14px;
                 opacity:.8;
             }
+
+            /* Modal Yes/No */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                justify-content: center;
+                align-items: center;
+            }
+            .modal-content {
+                background: white;
+                padding: 25px 40px;
+                border-radius: 10px;
+                text-align: center;
+                box-shadow: 0 0 15px rgba(0,0,0,0.3);
+                max-width: 400px;
+            }
+            .modal-content p {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+            .modal-buttons button {
+                margin: 0 15px;
+                padding: 8px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            .yes-btn {
+                background-color: #028F46;
+                color: white;
+            }
+            .no-btn {
+                background-color: #ccc;
+                color: black;
+            }
+            .yes-btn:hover { background-color: #02743a; }
+            .no-btn:hover { background-color: #aaa; }
         </style>
     </head>
     <body>
@@ -146,7 +189,6 @@
             <div class="user-info"> 
                 <button style="background:none;border:none;padding:0;cursor:pointer;" type="button" onclick="alert('Bạn đã bấm ảnh!')">
                     <img src="images/account.png" alt="User" width="40" style="margin-right:10px;">
-                    
                 </button>
                 <span>${a.name}</span>
             </div>
@@ -158,21 +200,18 @@
                     <h3 style="margin-left: 20px; font-size: 25px;">Tài khoản của</h3>
                     <span style="color: #028F46;margin-left: 20px; font-size: 25px;">${a.name}</span>
                 </td>
-
             </tr>
-
-
-
         </table> 
-        <div class="account-container">
 
+        <div class="account-container">
             <div class="menu-left">      
                 <p class="edit-info">Thông tin khách hàng</p>
                 <span class="edit-info" onclick="showHistory()">Lịch sử mua hàng</span>
                 <span class="edit-info" onclick="showVoucher()">Voucher của tôi</span>
                 <span class="edit-info" onclick="changePassword()">Đổi mật khẩu</span>
+                <!-- ✅ Thêm dòng Logout -->
+                <span class="edit-info" onclick="showLogoutModal()">Đăng xuất</span>
             </div>
-
 
             <div class="content-right" id="contentArea">
                 <div class="content">
@@ -196,31 +235,62 @@
                             <td class="action-col"></td>
                         </tr>
                     </table>
+                </div>           
+            </div>
+        </div>
+
+        <!-- ✅ Modal Yes/No -->
+        <div id="logoutModal" class="modal">
+            <div class="modal-content">
+                <p>⚠️ Bạn có chắc chắn muốn đăng xuất không?</p>
+                <div class="modal-buttons">
+                    <button class="yes-btn" onclick="logout()">Yes</button>
+                    <button class="no-btn" onclick="closeLogoutModal()">No</button>
                 </div>
-                            
             </div>
         </div>
 
         <script>
             function editInfo() {
-                 alert("Chưa làm cái này");
+                alert("Chưa làm cái này");
             }
+
             function showHistory() {
                 alert("Chưa làm cái này");
             }
+
             function showVoucher() {
                 alert("Chưa làm cái này");
             }
+
             function changePassword() {
                 fetch('ChangePassword.jsp')
-                        .then(response => response.text())
-                        .then(html => {
-                            document.getElementById('contentArea').innerHTML = html;
-                        })
-                        .catch(err => console.log(err));
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('contentArea').innerHTML = html;
+                    })
+                    .catch(err => console.log(err));
+            }
+
+            // ✅ Mở modal Yes/No
+            function showLogoutModal() {
+                document.getElementById("logoutModal").style.display = "flex";
+            }
+
+            // ✅ Đóng modal
+            function closeLogoutModal() {
+                document.getElementById("logoutModal").style.display = "none";
+            }
+
+            // ✅ Xử lý logout
+            function logout() {
+                fetch('LogoutServlet', { method: 'GET' })
+                    .then(() => {
+                        window.location.href = 'login.jsp';
+                    })
+                    .catch(err => console.log(err));
             }
         </script>
-
 
         <footer class="footer-contact">
             <div class="footer-container">
