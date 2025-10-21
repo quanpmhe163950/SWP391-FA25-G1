@@ -272,17 +272,14 @@
                     .catch(err => console.log(err));
             }
 
-            // ✅ Mở modal Yes/No
             function showLogoutModal() {
                 document.getElementById("logoutModal").style.display = "flex";
             }
 
-            // ✅ Đóng modal
             function closeLogoutModal() {
                 document.getElementById("logoutModal").style.display = "none";
             }
 
-            // ✅ Xử lý logout
             function logout() {
                 fetch('LogoutServlet', { method: 'GET' })
                     .then(() => {
