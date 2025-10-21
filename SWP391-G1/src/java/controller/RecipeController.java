@@ -6,6 +6,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import model.*;
 
@@ -23,14 +24,11 @@ public class RecipeController extends HttpServlet {
         if (action == null) action = "list";
 
         switch (action) {
-            case "view":
-                viewRecipe(request, response);
+            case "getRecipeAjax":
+                getRecipeAjax(request, response);
                 break;
             case "search":
                 searchMenuItem(request, response);
-                break;
-            case "new":
-                showAddRecipeForm(request, response);
                 break;
             default:
                 listMenuItems(request, response);
@@ -38,53 +36,75 @@ public class RecipeController extends HttpServlet {
         }
     }
 
-    // 🧾 Hiển thị danh sách món ăn (và đánh dấu món chưa có công thức)
+    // 🧾 Danh sách món ăn (hiển thị modal khi cần)
     private void listMenuItems(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<MenuItem> items = recipeDAO.getAllMenuItems();
-        List<Integer> itemsWithRecipe = recipeDAO.getItemsWithRecipeID(); // ✅ sửa ở đây
+        List<Integer> itemsWithRecipe = recipeDAO.getItemsWithRecipeID();
+        List<Ingredient> allIngredients = ingredientDAO.getAll();
+
         request.setAttribute("menuItems", items);
         request.setAttribute("itemsWithRecipe", itemsWithRecipe);
-        request.getRequestDispatcher("recipe-list.jsp").forward(request, response);
+        request.setAttribute("ingredients", allIngredients);
+        request.getRequestDispatcher("/web/admin/recipe-management.jsp").forward(request, response);
     }
 
-    // 🔍 Tìm kiếm món ăn theo tên
+    // 🔍 Tìm kiếm món ăn
     private void searchMenuItem(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String keyword = request.getParameter("keyword");
         List<MenuItem> items = recipeDAO.searchMenuItemByName(keyword);
-        List<Integer> itemsWithRecipe = recipeDAO.getItemsWithRecipeID(); // ✅ sửa ở đây
-        request.setAttribute("menuItems", items);
-        request.setAttribute("itemsWithRecipe", itemsWithRecipe);
-        request.setAttribute("keyword", keyword);
-        request.getRequestDispatcher("recipe-list.jsp").forward(request, response);
-    }
-
-    // 🍕 Xem chi tiết công thức của 1 món
-    private void viewRecipe(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        int itemId = Integer.parseInt(request.getParameter("itemId"));
-        Recipe recipe = recipeDAO.getRecipeByItem(itemId);
+        List<Integer> itemsWithRecipe = recipeDAO.getItemsWithRecipeID();
         List<Ingredient> allIngredients = ingredientDAO.getAll();
 
-        request.setAttribute("recipe", recipe);
+        request.setAttribute("menuItems", items);
+        request.setAttribute("itemsWithRecipe", itemsWithRecipe);
         request.setAttribute("ingredients", allIngredients);
-        request.getRequestDispatcher("recipe-detail.jsp").forward(request, response);
+        request.setAttribute("keyword", keyword);
+        request.getRequestDispatcher("/web/admin/recipe-management.jsp").forward(request, response);
     }
 
-    // ➕ Hiển thị form thêm công thức cho món chưa có
-    private void showAddRecipeForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    // 🔄 AJAX: Lấy chi tiết công thức (trả JSON)
+    private void getRecipeAjax(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         int itemId = Integer.parseInt(request.getParameter("itemId"));
-        List<Ingredient> ingredients = ingredientDAO.getAll();
-        request.setAttribute("itemId", itemId);
-        request.setAttribute("ingredients", ingredients);
-        request.getRequestDispatcher("recipe-add.jsp").forward(request, response);
+        Recipe recipe = recipeDAO.getRecipeByItem(itemId);
+
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        if (recipe == null) {
+            out.print("{\"exists\":false}");
+            return;
+        }
+
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"exists\":true,");
+        json.append("\"recipeId\":").append(recipe.getRecipeID()).append(",");
+        json.append("\"description\":\"").append(escapeJson(recipe.getDescription())).append("\",");
+        json.append("\"details\":[");
+
+        List<RecipeDetail> details = recipe.getDetails();
+        for (int i = 0; i < details.size(); i++) {
+            RecipeDetail d = details.get(i);
+            json.append("{")
+                .append("\"detailId\":").append(d.getRecipeDetailID()).append(",")
+                .append("\"ingredientName\":\"").append(escapeJson(d.getIngredientName())).append("\",")
+                .append("\"unit\":\"").append(escapeJson(d.getUnit())).append("\",")
+                .append("\"quantity\":").append(d.getQuantity())
+                .append("}");
+            if (i < details.size() - 1) json.append(",");
+        }
+
+        json.append("]}");
+        out.print(json.toString());
     }
 
+    // 🧾 POST
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
 
         String action = request.getParameter("action");
 
@@ -102,45 +122,72 @@ public class RecipeController extends HttpServlet {
                 deleteIngredient(request, response);
                 break;
             default:
-                response.sendRedirect("recipe");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     // ➕ Thêm công thức mới
     private void addRecipe(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        int itemId = Integer.parseInt(request.getParameter("itemId"));
-        String desc = request.getParameter("description");
-        recipeDAO.addRecipe(itemId, desc);
-        response.sendRedirect("recipe?action=view&itemId=" + itemId);
+        try {
+            int itemId = Integer.parseInt(request.getParameter("itemId"));
+            String desc = request.getParameter("description");
+            recipeDAO.addRecipe(itemId, desc);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     // ➕ Thêm nguyên liệu vào công thức
     private void addIngredient(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        int recipeId = Integer.parseInt(request.getParameter("recipeId"));
-        int ingredientId = Integer.parseInt(request.getParameter("ingredientId"));
-        double quantity = Double.parseDouble(request.getParameter("quantity"));
-        recipeDAO.addIngredientToRecipe(recipeId, ingredientId, quantity);
-        response.sendRedirect("recipe?action=view&itemId=" + request.getParameter("itemId"));
+        try {
+            int recipeId = Integer.parseInt(request.getParameter("recipeId"));
+            int ingredientId = Integer.parseInt(request.getParameter("ingredientId"));
+            double quantity = Double.parseDouble(request.getParameter("quantity"));
+            recipeDAO.addIngredientToRecipe(recipeId, ingredientId, quantity);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
-    // ✏️ Cập nhật số lượng nguyên liệu
+    // ✏️ Cập nhật số lượng nguyên liệu trong công thức
     private void updateIngredient(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        int detailId = Integer.parseInt(request.getParameter("detailId"));
-        double quantity = Double.parseDouble(request.getParameter("quantity"));
-        int itemId = Integer.parseInt(request.getParameter("itemId"));
-        recipeDAO.updateIngredientQuantity(detailId, quantity);
-        response.sendRedirect("recipe?action=view&itemId=" + itemId);
+        try {
+            int detailId = Integer.parseInt(request.getParameter("detailId"));
+            double quantity = Double.parseDouble(request.getParameter("quantity"));
+            recipeDAO.updateIngredientQuantity(detailId, quantity);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     // ❌ Xóa nguyên liệu khỏi công thức
     private void deleteIngredient(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        int detailId = Integer.parseInt(request.getParameter("detailId"));
-        int itemId = Integer.parseInt(request.getParameter("itemId"));
-        recipeDAO.deleteIngredientFromRecipe(detailId);
-        response.sendRedirect("recipe?action=view&itemId=" + itemId);
+        try {
+            int detailId = Integer.parseInt(request.getParameter("detailId"));
+            recipeDAO.deleteIngredientFromRecipe(detailId);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // ⚙️ Escape ký tự JSON
+    private String escapeJson(String text) {
+        if (text == null) return "";
+        return text.replace("\\", "\\\\")
+                   .replace("\"", "\\\"")
+                   .replace("\n", "\\n")
+                   .replace("\r", "");
     }
 }
