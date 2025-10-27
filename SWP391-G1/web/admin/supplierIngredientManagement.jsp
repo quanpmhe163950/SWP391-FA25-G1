@@ -3,12 +3,26 @@
 
 <html>
 <head>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+    </style>
     <title>Quản lý nguyên liệu theo nhà cung cấp</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="bg-light">
+    <!-- ✅ Thêm sidebar -->
+    <jsp:include page="admin-panel.jsp" />
+
 <div class="container mt-4">
     <h3 class="mb-3 text-center text-primary fw-bold">QUẢN LÝ NGUYÊN LIỆU THEO NHÀ CUNG CẤP</h3>
 

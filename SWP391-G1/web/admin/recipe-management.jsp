@@ -9,8 +9,36 @@
     <title>Quản lý công thức</title>
     <link rel="stylesheet" href="../css/admin.css">
     <style>
-        body { font-family: "Segoe UI", Tahoma, sans-serif; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f4f6f8;
+    display: flex; /* để sidebar + content nằm cạnh nhau */
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* sidebar cố định chiều rộng */
+.sidebar {
+    width: 220px;
+    background-color: #1f3349;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* ✅ phần nội dung chính bên phải */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #f9fbfd;
+    padding: 25px 40px;
+}
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
         th { background-color: #f4f4f4; }
         .btn { padding: 6px 10px; border: none; border-radius: 4px; cursor: pointer; }
@@ -31,21 +59,58 @@
         }
         .close { float: right; font-size: 24px; cursor: pointer; }
         .search-box { margin-bottom: 10px; }
-        textarea { width: 100%; resize: vertical; margin-top: 8px; }
         .pagination { text-align: right; margin-top: 10px; }
         .pagination button { margin-left: 5px; padding: 4px 8px; }
         tr:hover { background-color: #eef; cursor: pointer; }
         input[type="number"] { width: 90px; }
         select { min-width: 160px; }
+        /* ================= Search bar đẹp hơn ================= */
+.search-bar {
+    position: relative;
+    max-width: 300px;
+    margin: 0 auto 20px auto;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    font-size: 15px;
+    border: 1px solid #d0d7de;
+    border-radius: 25px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.4);
+}
+
+/* icon tìm kiếm */
+.search-bar::before {
+    content: "🔍";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+}
     </style>
 </head>
 <body>
+    <div class="sidebar"> 
+        <jsp:include page="admin-panel.jsp"/>
+    </div>
 
-<jsp:include page="admin-panel.jsp"/>
-
-<h2>Quản lý công thức món ăn</h2>
-
-<table>
+    <div class="main-content">
+        <h2>Quản lý công thức món ăn</h2>
+<div class="search-bar">
+    <input type="text" id="menuSearch" placeholder="Tìm món ăn..." onkeyup="filterMenu()">
+</div>
+<table id="menuTable">
     <thead>
         <tr>
             <th>ID</th>
@@ -55,7 +120,7 @@
             <th>Hành động</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="menuBody">
     <%
         List<MenuItem> menuItems = (List<MenuItem>) request.getAttribute("menuItems");
         List<Integer> itemsWithRecipe = (List<Integer>) request.getAttribute("itemsWithRecipe");
@@ -83,7 +148,8 @@
     %>
     </tbody>
 </table>
-
+<!-- 📄 Phân trang -->
+<div class="pagination" id="menuPagination"></div>
 <!-- Modal xem công thức -->
 <div id="viewRecipeModal" class="modal">
     <div class="modal-content">
@@ -197,7 +263,52 @@
     </div>
 </div>
 
+    </div>
+
 <script>
+    const rowsPerPageMenu = 10;
+let currentPageMenu = 1;
+
+window.addEventListener("DOMContentLoaded", () => {
+    paginateMenu();
+});
+
+function filterMenu() {
+    currentPageMenu = 1;
+    paginateMenu();
+}
+
+function paginateMenu() {
+    const rows = Array.from(document.querySelectorAll("#menuBody tr"));
+    const keyword = document.getElementById("menuSearch").value.trim().toLowerCase();
+
+    // Lọc theo từ khóa
+    const filtered = rows.filter(r => {
+        const name = r.children[1].textContent.toLowerCase();
+        return name.includes(keyword);
+    });
+
+    // Ẩn/hiện theo trang
+    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPageMenu));
+    filtered.forEach((r, idx) => {
+        r.style.display = (idx >= (currentPageMenu - 1) * rowsPerPageMenu && idx < currentPageMenu * rowsPerPageMenu)
+            ? "" : "none";
+    });
+
+    // Ẩn các hàng không thuộc filtered
+    rows.forEach(r => { if (!filtered.includes(r)) r.style.display = "none"; });
+
+    // Render pagination
+    const pag = document.getElementById("menuPagination");
+    pag.innerHTML = "";
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPageMenu) btn.disabled = true;
+        btn.onclick = () => { currentPageMenu = i; paginateMenu(); };
+        pag.appendChild(btn);
+    }
+}
 /* ========== Config & state ========== */
 const contextPath = '<%= request.getContextPath() %>';
 const rowsPerPage = 10;
