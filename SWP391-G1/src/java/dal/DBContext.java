@@ -11,7 +11,7 @@ public class DBContext {
     private static final String PASS = "123";
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=PizzaManagement;encrypt=false;trustServerCertificate=true";
 
-    protected Connection connection; // ⚡ dùng cho DAO
+    public Connection connection; // ⚡ dùng cho DAO
 
     public DBContext() {
         try {

@@ -9,7 +9,7 @@ public class IngredientSupplier {
     private double price;
     private Date lastUpdated;
 
-    // Optional: tham chiếu đến đối tượng thật để hiển thị thông tin rõ hơn
+    // Liên kết đối tượng để JSP hiển thị thông tin rõ hơn
     private Supplier supplier;
     private Ingredient ingredient;
 
@@ -89,6 +89,8 @@ public class IngredientSupplier {
                 ", ingredientID=" + ingredientID +
                 ", price=" + price +
                 ", lastUpdated=" + lastUpdated +
+                ", supplier=" + (supplier != null ? supplier.getSupplierName() : "null") +
+                ", ingredient=" + (ingredient != null ? ingredient.getName() : "null") +
                 '}';
     }
 }
