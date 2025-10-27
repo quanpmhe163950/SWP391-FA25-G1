@@ -148,4 +148,32 @@ public class IngredientDAO extends DBContext {
         }
         return dishes;
     }
+    
+    public List<Ingredient> getIngredientsNotInRecipe(int recipeId) {
+    List<Ingredient> list = new ArrayList<>();
+    String sql = """
+        SELECT id, name, unit
+        FROM Ingredients
+        WHERE id NOT IN (
+            SELECT IngredientID FROM RecipeDetail WHERE RecipeID = ?
+        )
+        ORDER BY name
+    """;
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, recipeId);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Ingredient i = new Ingredient();
+                i.setId(rs.getInt("id"));
+                i.setName(rs.getString("name"));
+                i.setUnit(rs.getString("unit"));
+                list.add(i);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
 }

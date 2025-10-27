@@ -14,34 +14,6 @@
             overflow: hidden;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 22px;
-        }
-
-        .menu-item {
-            padding: 12px 15px;
-            margin: 6px 0;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background 0.3s;
-        }
-
-        .menu-item:hover {
-            background-color: #34495e;
-        }
-
         /* Main container */
         .main-container {
             flex: 1;
@@ -130,7 +102,6 @@
             max-height: 350px;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -141,21 +112,8 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>Admin Panel</h2>
-        <a class="menu-item" href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
-<a class="menu-item" href="${pageContext.request.contextPath}/admin/account">User Management</a>
-<a class="menu-item" href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
-<a class="menu-item" href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
-
-<div class="menu-item">Suppliers</div>
-<div class="menu-item">Purchase Orders</div>
-<div class="menu-item">Products</div>
-<div class="menu-item">Recipes</div>
-<div class="menu-item">Feedback</div>
-
-    </div>
+    <!-- Import sidebar -->
+    <jsp:include page="admin-panel.jsp" />
 
     <!-- Main container -->
     <div class="main-container">

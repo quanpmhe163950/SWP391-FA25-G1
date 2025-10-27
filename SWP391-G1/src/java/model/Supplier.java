@@ -3,23 +3,21 @@ package model;
 public class Supplier {
     private int supplierID;
     private String supplierName;
-    private String contactName;
     private String phone;
+    private String email;
     private String address;
+    private boolean isActive;
 
     // --- Constructors ---
     public Supplier() {}
 
-    public Supplier(int supplierID, String supplierName, String contactName, String phone, String address) {
+    public Supplier(int supplierID, String supplierName, String phone, String email, String address, boolean isActive) {
         this.supplierID = supplierID;
         this.supplierName = supplierName;
-        this.contactName = contactName;
         this.phone = phone;
+        this.email = email;
         this.address = address;
-    }
-
-    public Supplier(int aInt, String string, String string0) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.isActive = isActive;
     }
 
     // --- Getters & Setters ---
@@ -39,20 +37,20 @@ public class Supplier {
         this.supplierName = supplierName;
     }
 
-    public String getContactName() {
-        return contactName;
-    }
-
-    public void setContactName(String contactName) {
-        this.contactName = contactName;
-    }
-
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getAddress() {
@@ -63,14 +61,23 @@ public class Supplier {
         this.address = address;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     @Override
     public String toString() {
         return "Supplier{" +
                 "supplierID=" + supplierID +
                 ", supplierName='" + supplierName + '\'' +
-                ", contactName='" + contactName + '\'' +
                 ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
+                ", isActive=" + isActive +
                 '}';
     }
 }

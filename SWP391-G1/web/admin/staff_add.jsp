@@ -4,49 +4,150 @@
 <head>
     <title>Add New Staff</title>
     <style>
-        body { font-family: Arial; margin: 30px; }
-        form { max-width: 400px; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input, select { width: 100%; padding: 6px; margin-top: 5px; }
-        button { margin-top: 15px; padding: 8px 15px; background: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-        button:hover { background: #218838; }
-        a { margin-left: 10px; text-decoration: none; color: #555; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ====== Nội dung chính ====== */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        /* ====== Form card ====== */
+        .form-container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        form label {
+            display: block;
+            margin-top: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        form input, form select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        form input:focus, form select:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 3px rgba(74,144,226,0.3);
+        }
+
+        .btn-submit {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: #218838;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .actions a {
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .error-msg {
+            color: #d9534f;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
-<h2>Add New Staff</h2>
 
-<form action="${pageContext.request.contextPath}/admin/staff" method="post">
-    <input type="hidden" name="action" value="add"/>
+    <!-- Import sidebar -->
+    <jsp:include page="admin-panel.jsp" />
 
-    <label>Full name:</label>
-    <input type="text" name="fullname" required />
+    <!-- Nội dung chính -->
+    <div class="main-content">
+        <div class="form-container">
+            <h2>Add New Staff</h2>
 
-    <label>Role:</label>
-    <select name="role">
-        <option value="4" selected>Staff</option>
-        <option value="3">Manager</option>
-    </select>
+            <form action="${pageContext.request.contextPath}/admin/staff" method="post">
+                <input type="hidden" name="action" value="add"/>
 
-    <label>Start Date:</label>
-    <input type="date" id="startDate" name="startDate" required />
+                <label>Full Name:</label>
+                <input type="text" name="fullname" required />
 
-    <label>Phone (optional):</label>
-    <input type="text" name="phone" />
+                <label>Role:</label>
+                <select name="role">
+                    <option value="4" selected>Staff</option>
+                    <option value="3">Manager</option>
+                </select>
 
-    <button type="submit">Create</button>
-    <a href="${pageContext.request.contextPath}/admin/staff">Cancel</a>
-</form>
+                <label>Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required />
 
-<c:if test="${not empty error}">
-    <p style="color:red;">${error}</p>
-</c:if>
+                <label>Phone (optional):</label>
+                <input type="text" name="phone" />
 
-<script>
-    // Set min date = hôm nay để disable ngày quá khứ
-    const today = new Date().toISOString().split("T")[0];
-    document.getElementById("startDate").setAttribute("min", today);
-</script>
+                <button type="submit" class="btn-submit">Create</button>
+
+                <div class="actions">
+                    <a href="${pageContext.request.contextPath}/admin/staff">← Back to Staff List</a>
+                </div>
+            </form>
+
+            <c:if test="${not empty error}">
+                <p class="error-msg">${error}</p>
+            </c:if>
+        </div>
+    </div>
+
+    <script>
+        // Set min date = hôm nay để disable ngày quá khứ
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("startDate").setAttribute("min", today);
+    </script>
 
 </body>
 </html>

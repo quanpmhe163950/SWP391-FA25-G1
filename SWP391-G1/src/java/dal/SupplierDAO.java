@@ -4,9 +4,12 @@ import java.sql.*;
 import java.util.*;
 import model.Supplier;
 import model.Ingredient;
-import model.IngredientSupplier;
 
 public class SupplierDAO extends DBContext {
+
+    // ===========================================
+    // ============== SUPPLIER CRUD ==============
+    // ===========================================
 
     // --- Lấy toàn bộ nhà cung cấp ---
     public List<Supplier> getAllSuppliers() {
@@ -18,9 +21,10 @@ public class SupplierDAO extends DBContext {
                 Supplier s = new Supplier();
                 s.setSupplierID(rs.getInt("SupplierID"));
                 s.setSupplierName(rs.getString("SupplierName"));
-                s.setContactName(rs.getString("ContactName"));
                 s.setPhone(rs.getString("Phone"));
+                s.setEmail(rs.getString("Email"));
                 s.setAddress(rs.getString("Address"));
+                s.setActive(rs.getBoolean("IsActive"));
                 list.add(s);
             }
         } catch (SQLException e) {
@@ -29,47 +33,65 @@ public class SupplierDAO extends DBContext {
         return list;
     }
 
-    // --- Lấy danh sách nguyên liệu mà 1 nhà cung cấp cung cấp ---
-    public List<IngredientSupplier> getIngredientsBySupplier(int supplierID) {
-        List<IngredientSupplier> list = new ArrayList<>();
+    // --- Thêm nhà cung cấp ---
+    public void addSupplier(String name, String phone, String email, String address, boolean isActive) {
+        String sql = "INSERT INTO Supplier (SupplierName, Phone, Email, Address, IsActive) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, phone);
+            ps.setString(3, email);
+            ps.setString(4, address);
+            ps.setBoolean(5, isActive);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // --- Cập nhật nhà cung cấp ---
+    public void updateSupplier(int id, String name, String phone, String email, String address, boolean isActive) {
         String sql = """
-            SELECT isup.ID, isup.SupplierID, isup.IngredientID, isup.Price, isup.LastUpdated,
-                   s.SupplierName, s.ContactName, s.Phone, s.Address,
-                   i.IngredientName, i.Unit
-            FROM IngredientSupplier isup
-            JOIN Supplier s ON isup.SupplierID = s.SupplierID
-            JOIN Ingredient i ON isup.IngredientID = i.IngredientID
+            UPDATE Supplier
+            SET SupplierName = ?, Phone = ?, Email = ?, Address = ?, IsActive = ?
+            WHERE SupplierID = ?
+        """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, phone);
+            ps.setString(3, email);
+            ps.setString(4, address);
+            ps.setBoolean(5, isActive);
+            ps.setInt(6, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ===========================================
+    // =========== INGREDIENTS MAPPING ============
+    // ===========================================
+
+    // --- Lấy danh sách nguyên liệu mà supplier đang cung cấp ---
+    public List<Ingredient> getSuppliedIngredientsBySupplier(int supplierID) {
+        List<Ingredient> list = new ArrayList<>();
+        String sql = """
+            SELECT i.id, i.Name, i.Unit, i.Quantity, isup.Price
+            FROM Ingredients i
+            JOIN IngredientSupplier isup ON i.id = isup.IngredientID
             WHERE isup.SupplierID = ?
         """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, supplierID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                IngredientSupplier isup = new IngredientSupplier(
-                        rs.getInt("ID"),
-                        rs.getInt("SupplierID"),
-                        rs.getInt("IngredientID"),
-                        rs.getDouble("Price"),
-                        rs.getDate("LastUpdated")
-                );
-
-                // Gắn Supplier & Ingredient
-                Supplier supplier = new Supplier(
-                        rs.getInt("SupplierID"),
-                        rs.getString("SupplierName"),
-                        rs.getString("ContactName"),
-                        rs.getString("Phone"),
-                        rs.getString("Address")
-                );
-                Ingredient ingredient = new Ingredient(
-                        rs.getInt("IngredientID"),
-                        rs.getString("IngredientName"),
-                        rs.getString("Unit")
-                );
-
-                isup.setSupplier(supplier);
-                isup.setIngredient(ingredient);
-                list.add(isup);
+                Ingredient ing = new Ingredient();
+                ing.setId(rs.getInt("id"));
+                ing.setName(rs.getString("Name"));
+                ing.setUnit(rs.getString("Unit"));
+                ing.setQuantity(rs.getDouble("Quantity"));
+                ing.setPrice(rs.getDouble("Price"));
+                list.add(ing);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,21 +99,35 @@ public class SupplierDAO extends DBContext {
         return list;
     }
 
-    // --- Thêm nhà cung cấp mới ---
-    public void addSupplier(String name, String contactName, String phone, String address) {
-        String sql = "INSERT INTO Supplier (SupplierName, ContactName, Phone, Address) VALUES (?, ?, ?, ?)";
+    // --- Lấy danh sách nguyên liệu chưa được cung cấp ---
+    public List<Ingredient> getUnsuppliedIngredientsBySupplier(int supplierID) {
+        List<Ingredient> list = new ArrayList<>();
+        String sql = """
+            SELECT i.id, i.Name, i.Unit, i.Quantity, i.Price
+            FROM Ingredients i
+            WHERE i.id NOT IN (
+                SELECT IngredientID FROM IngredientSupplier WHERE SupplierID = ?
+            )
+        """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, name);
-            ps.setString(2, contactName);
-            ps.setString(3, phone);
-            ps.setString(4, address);
-            ps.executeUpdate();
+            ps.setInt(1, supplierID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Ingredient ing = new Ingredient();
+                ing.setId(rs.getInt("id"));
+                ing.setName(rs.getString("Name"));
+                ing.setUnit(rs.getString("Unit"));
+                ing.setQuantity(rs.getDouble("Quantity"));
+                ing.setPrice(rs.getDouble("Price"));
+                list.add(ing);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return list;
     }
 
-    // --- Thêm liên kết nguyên liệu - nhà cung cấp ---
+    // --- Thêm nguyên liệu cho supplier ---
     public void addIngredientSupplier(int ingredientID, int supplierID, double price) {
         String sql = "INSERT INTO IngredientSupplier (IngredientID, SupplierID, Price, LastUpdated) VALUES (?, ?, ?, GETDATE())";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -104,9 +140,9 @@ public class SupplierDAO extends DBContext {
         }
     }
 
-    // --- Cập nhật giá nhập ---
+    // --- Cập nhật giá nguyên liệu ---
     public void updateIngredientPrice(int id, double newPrice) {
-        String sql = "UPDATE IngredientSupplier SET Price = ?, LastUpdated = GETDATE() WHERE ID = ?";
+        String sql = "UPDATE IngredientSupplier SET Price = ?, LastUpdated = GETDATE() WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setDouble(1, newPrice);
             ps.setInt(2, id);
@@ -115,77 +151,37 @@ public class SupplierDAO extends DBContext {
             e.printStackTrace();
         }
     }
+    
+    public void addOrUpdateSupplierIngredient(int supplierID, int ingredientID, double price) {
+    String checkSql = "SELECT id FROM IngredientSupplier WHERE SupplierID = ? AND IngredientID = ?";
+    String insertSql = "INSERT INTO IngredientSupplier (SupplierID, IngredientID, Price, LastUpdated) VALUES (?, ?, ?, GETDATE())";
+    String updateSql = "UPDATE IngredientSupplier SET Price = ?, LastUpdated = GETDATE() WHERE SupplierID = ? AND IngredientID = ?";
 
-    // --- Xóa liên kết ---
-    public void deleteIngredientSupplier(int id) {
-        String sql = "DELETE FROM IngredientSupplier WHERE ID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    try (PreparedStatement checkPs = connection.prepareStatement(checkSql)) {
+        checkPs.setInt(1, supplierID);
+        checkPs.setInt(2, ingredientID);
+        ResultSet rs = checkPs.executeQuery();
+
+        if (rs.next()) {
+            // Đã tồn tại → update giá
+            try (PreparedStatement updatePs = connection.prepareStatement(updateSql)) {
+                updatePs.setDouble(1, price);
+                updatePs.setInt(2, supplierID);
+                updatePs.setInt(3, ingredientID);
+                updatePs.executeUpdate();
+            }
+        } else {
+            // Chưa có → thêm mới
+            try (PreparedStatement insertPs = connection.prepareStatement(insertSql)) {
+                insertPs.setInt(1, supplierID);
+                insertPs.setInt(2, ingredientID);
+                insertPs.setDouble(3, price);
+                insertPs.executeUpdate();
+            }
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
-    // --- Tìm kiếm theo tên nhà cung cấp và/hoặc nguyên liệu ---
-    public List<IngredientSupplier> search(String supplierName, String ingredientName) {
-        List<IngredientSupplier> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("""
-            SELECT isup.ID, isup.SupplierID, isup.IngredientID, isup.Price, isup.LastUpdated,
-                   s.SupplierName, s.ContactName, s.Phone, s.Address,
-                   i.IngredientName, i.Unit
-            FROM IngredientSupplier isup
-            JOIN Supplier s ON isup.SupplierID = s.SupplierID
-            JOIN Ingredient i ON isup.IngredientID = i.IngredientID
-            WHERE 1=1
-        """);
-
-        if (supplierName != null && !supplierName.isBlank()) {
-            sql.append(" AND s.SupplierName LIKE ?");
-        }
-        if (ingredientName != null && !ingredientName.isBlank()) {
-            sql.append(" AND i.IngredientName LIKE ?");
-        }
-
-        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            int idx = 1;
-            if (supplierName != null && !supplierName.isBlank()) {
-                ps.setString(idx++, "%" + supplierName + "%");
-            }
-            if (ingredientName != null && !ingredientName.isBlank()) {
-                ps.setString(idx++, "%" + ingredientName + "%");
-            }
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                IngredientSupplier isup = new IngredientSupplier(
-                        rs.getInt("ID"),
-                        rs.getInt("SupplierID"),
-                        rs.getInt("IngredientID"),
-                        rs.getDouble("Price"),
-                        rs.getDate("LastUpdated")
-                );
-
-                Supplier supplier = new Supplier(
-                        rs.getInt("SupplierID"),
-                        rs.getString("SupplierName"),
-                        rs.getString("ContactName"),
-                        rs.getString("Phone"),
-                        rs.getString("Address")
-                );
-                Ingredient ingredient = new Ingredient(
-                        rs.getInt("IngredientID"),
-                        rs.getString("IngredientName"),
-                        rs.getString("Unit")
-                );
-
-                isup.setSupplier(supplier);
-                isup.setIngredient(ingredient);
-                list.add(isup);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
 }
