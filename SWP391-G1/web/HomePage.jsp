@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List, model.Blog, dal.BlogDAO" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -290,6 +291,48 @@
                     <div class="item-card"><h3>Student Combo</h3><a href="#">Order</a></div>
                     <div class="item-card"><h3>Party Combo</h3><a href="#">Order</a></div>
                 </div>
+
+                <!-- Blog Section -->
+                <h2>Blog</h2>
+                <div class="menu-grid">
+                    <%
+                        // Lấy danh sách blog từ request (BlogController?action=listForHome sẽ đặt attribute này)
+                        List<Blog> blogs = (List<Blog>) request.getAttribute("blogList");
+                        if (blogs == null) {
+                            // fallback: nếu không có trong request thì thử session (trường hợp redirect trước đó)
+                            blogs = (List<Blog>) session.getAttribute("blogList");
+                        }
+                        // Nếu vẫn chưa có danh sách (truy cập trực tiếp HomePage.jsp), load trực tiếp từ DB
+                        if (blogs == null) {
+                            try {
+                                blogs = new BlogDAO().getAllBlogs();
+                            } catch (Exception _e) {
+                                blogs = null;
+                            }
+                        }
+                        if (blogs != null && !blogs.isEmpty()) {
+                            for (Blog post : blogs) {
+                    %>
+                    <div class="item-card">
+                        <h3><%= post.getTitle() %></h3>
+                        <p><%= post.getContent() %></p>
+                        <% if (post.getImage() != null && !post.getImage().trim().isEmpty()) { %>
+                            <img src="<%= request.getContextPath() + "/images/" + post.getImage() %>" alt="" style="max-width:100%; margin-top:8px;" />
+                        <% } %>
+                    </div>
+                    <%
+                            }
+                        } else {
+                    %>
+                    <!-- Nếu không có bài viết nào, hiển thị mẫu tĩnh -->
+                    <div class="item-card"><h3>Pizza – Món ăn được yêu thích nhất thế giới</h3><p>Bạn có biết nguồn gốc của pizza bắt đầu từ Ý vào thế kỷ 18? Hãy cùng khám phá thêm trong các bài viết sắp tới.</p></div>
+                    <div class="item-card"><h3>Bí quyết làm đế pizza giòn tan</h3><p>Admin chia sẻ cách chọn bột, ủ men và nướng đúng cách để có lớp đế hoàn hảo.</p></div>
+                    <div class="item-card"><h3>Câu chuyện thương hiệu Pizza House</h3><p>Từ một tiệm nhỏ ở Hà Nội, Pizza House đã phát triển thành chuỗi cửa hàng khắp Việt Nam.</p></div>
+                    <div class="item-card"><h3>Top pizza bán chạy nhất tháng</h3><p>Danh sách những hương vị pizza được khách hàng yêu thích nhất do Admin tổng hợp.</p></div>
+                    <%
+                        }
+                    %>
+                </div>
             </div>
 
             <!-- Bill Section -->
@@ -344,4 +387,3 @@
 
     </body>
 </html>
-
