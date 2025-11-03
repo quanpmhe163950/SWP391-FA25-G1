@@ -96,9 +96,6 @@
                     <option value="l" ${ingredient.unit == 'l' ? 'selected' : ''}>L</option>
                 </select>
 
-                <label>Price:</label>
-                <input type="number" step="0.01" name="price" value="${ingredient.price}" />
-
                 <input type="submit" value="Update" />
             </form>
 

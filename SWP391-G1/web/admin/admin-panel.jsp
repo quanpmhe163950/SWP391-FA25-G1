@@ -99,7 +99,7 @@
     <a class="menu-item" href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
     <a class="menu-item" href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
     <a class="menu-item" href="${pageContext.request.contextPath}/admin/supplier-ingredient">Suppliers</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/purchase">Purchase Orders</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/purchase-order">Purchase Orders</a>
     <a class="menu-item" href="${pageContext.request.contextPath}/admin/food">Products</a>
     <a class="menu-item" href="${pageContext.request.contextPath}/admin/recipe">Recipes</a>
     <a class="menu-item" href="${pageContext.request.contextPath}/admin/feedback">Feedback</a>

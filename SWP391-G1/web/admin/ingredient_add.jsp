@@ -100,12 +100,10 @@
                 <label>Unit:</label>
                 <select name="unit" required>
                     <option value="kg">Kg</option>
+                    <option value="g">g</option>
                     <option value="ml">ml</option>
                     <option value="l">L</option>
                 </select>
-
-                <label>Price:</label>
-                <input type="number" step="0.01" name="price" value="0" required />
 
                 <input type="submit" value="Save" />
             </form>
