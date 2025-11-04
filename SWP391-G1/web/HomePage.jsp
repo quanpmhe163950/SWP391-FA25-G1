@@ -229,7 +229,12 @@
                     <a href="#">Login</a>
                     <a href="#">Register</a>
                     <a href="#">Profile</a>
+                    <a href="<%= request.getContextPath() %>/admin/blog.jsp">Add Blog</a>
+                    <a href="<%= request.getContextPath() %>/BlogController">Edit Blog</a>
+                    <a href="<%= request.getContextPath() %>/login" style="color: red; font-weight: bold;">Logout</a>
                 </div>
+
+
             </div>
         </header>
 
@@ -317,7 +322,7 @@
                         <h3><%= post.getTitle() %></h3>
                         <p><%= post.getContent() %></p>
                         <% if (post.getImage() != null && !post.getImage().trim().isEmpty()) { %>
-                            <img src="<%= request.getContextPath() + "/images/" + post.getImage() %>" alt="" style="max-width:100%; margin-top:8px;" />
+                        <img src="<%= request.getContextPath() + "/images/" + post.getImage() %>" alt="" style="max-width:100%; margin-top:8px;" />
                         <% } %>
                     </div>
                     <%
@@ -387,3 +392,4 @@
 
     </body>
 </html>
+

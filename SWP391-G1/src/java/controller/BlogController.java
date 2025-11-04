@@ -2,9 +2,12 @@ package controller;
 
 import dal.BlogDAO;
 import model.Blog;
+import model.User;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
+import java.nio.file.Paths;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,7 +27,6 @@ public class BlogController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
@@ -37,28 +39,26 @@ public class BlogController extends HttpServlet {
 
         switch (action) {
             case "delete": {
-                // Chỉ Manager (roleID == 3) mới được xóa
                 Object acct = request.getSession().getAttribute("account");
-                if (acct == null || !(acct instanceof model.User) || ((model.User) acct).getRoleID() != 3) {
+                if (!isManager(acct)) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Chỉ Manager mới có quyền xóa bài viết");
                     return;
                 }
+
                 try {
                     int id = Integer.parseInt(request.getParameter("id"));
                     dao.deleteBlog(id);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                // Xóa xong thì quay lại danh sách admin
+
                 response.sendRedirect(request.getContextPath() + "/BlogController");
                 break;
             }
 
             case "listForHome": {
-                // ✅ Lấy danh sách blog và hiển thị ở HomePage.jsp
                 List<Blog> blogs = dao.getAllBlogs();
                 request.setAttribute("blogList", blogs);
-                // Lưu vào session để HomePage.jsp có thể dùng khi truy cập trực tiếp
                 request.getSession().setAttribute("blogList", blogs);
                 request.getRequestDispatcher("/HomePage.jsp").forward(request, response);
                 break;
@@ -68,6 +68,10 @@ public class BlogController extends HttpServlet {
                 try {
                     int id = Integer.parseInt(request.getParameter("id"));
                     Blog blog = dao.getBlogById(id);
+                    if (blog == null) {
+                        response.sendRedirect(request.getContextPath() + "/BlogController");
+                        return;
+                    }
                     request.setAttribute("blog", blog);
                     request.getRequestDispatcher("/admin/editBlog.jsp").forward(request, response);
                 } catch (Exception e) {
@@ -78,7 +82,6 @@ public class BlogController extends HttpServlet {
             }
 
             default: {
-                // ✅ Danh sách blog trong admin
                 List<Blog> list = dao.getAllBlogs();
                 request.setAttribute("blogList", list);
                 request.getRequestDispatcher("/admin/blog.jsp").forward(request, response);
@@ -97,30 +100,34 @@ public class BlogController extends HttpServlet {
         String action = request.getParameter("action");
         BlogDAO dao = new BlogDAO();
 
-        try {
-            // Với thao tác thay đổi dữ liệu (add/update) chỉ cho Manager
-            Object acct = request.getSession().getAttribute("account");
-            boolean isManager = (acct != null && acct instanceof model.User && ((model.User) acct).getRoleID() == 3);
+        Object acct = request.getSession().getAttribute("account");
+        if (acct == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
 
+        // Debug thông tin người dùng đang thao tác
+        if (acct instanceof User) {
+            User u = (User) acct;
+            System.out.println("[DEBUG] User: " + u.getUsername() + " | RoleID: " + u.getRoleID());
+        }
+
+        try {
             if ("add".equalsIgnoreCase(action)) {
-                if (!isManager) {
+                if (!isManager(acct)) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Chỉ Manager mới có quyền thêm bài viết");
                     return;
                 }
-                handleAdd(request, dao);
-
-                // ✅ Sau khi thêm blog xong → về HomePage hiển thị bài mới
+                handleAdd(request, dao, (User) acct);
                 response.sendRedirect(request.getContextPath() + "/BlogController?action=listForHome");
                 return;
 
             } else if ("update".equalsIgnoreCase(action)) {
-                if (!isManager) {
+                if (!isManager(acct)) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Chỉ Manager mới có quyền sửa bài viết");
                     return;
                 }
                 handleUpdate(request, dao);
-
-                // ✅ Sau khi sửa → về lại trang quản lý admin
                 response.sendRedirect(request.getContextPath() + "/BlogController");
                 return;
             }
@@ -131,12 +138,17 @@ public class BlogController extends HttpServlet {
         }
     }
 
-    // ======================= XỬ LÝ THÊM BLOG =======================
-    private void handleAdd(HttpServletRequest request, BlogDAO dao) throws Exception {
+    // ===================== HÀM TIỆN ÍCH =====================
+    private boolean isManager(Object acct) {
+        return acct != null && acct instanceof User && ((User) acct).getRoleID() == 3;
+    }
+
+    // =============== XỬ LÝ THÊM BLOG ================
+    private void handleAdd(HttpServletRequest request, BlogDAO dao, User user) throws Exception {
         String title = request.getParameter("title");
         String content = request.getParameter("content");
-
         String fileName = saveImage(request.getPart("image"));
+
         if (fileName == null || fileName.isEmpty()) {
             fileName = "default.jpg";
         }
@@ -145,11 +157,11 @@ public class BlogController extends HttpServlet {
         blog.setTitle(title);
         blog.setContent(content);
         blog.setImage(fileName);
-
+        blog.setAuthorID(user.getUserID());
         dao.addBlog(blog);
     }
 
-    // ======================= XỬ LÝ CẬP NHẬT BLOG =======================
+    // =============== XỬ LÝ CẬP NHẬT BLOG ================
     private void handleUpdate(HttpServletRequest request, BlogDAO dao) throws Exception {
         int id = Integer.parseInt(request.getParameter("blogID"));
         String title = request.getParameter("title");
@@ -166,25 +178,43 @@ public class BlogController extends HttpServlet {
         existing.setTitle(title);
         existing.setContent(content);
         existing.setImage(fileName);
-
         dao.updateBlog(existing);
     }
 
-    // ======================= HÀM LƯU ẢNH =======================
+    // =============== LƯU ẢNH ================
     private String saveImage(Part filePart) throws IOException {
         if (filePart == null) return null;
 
-        String fileName = filePart.getSubmittedFileName();
-        if (fileName == null || fileName.trim().isEmpty()) return null;
+        String submitted = filePart.getSubmittedFileName();
+        if (submitted == null || submitted.trim().isEmpty()) return null;
 
-        // ✅ Đường dẫn tuyệt đối đến thư mục images (webapp/images)
+        String originalName = Paths.get(submitted).getFileName().toString();
+        String ext = "";
+        int dot = originalName.lastIndexOf('.');
+        if (dot >= 0) ext = originalName.substring(dot);
+
+        String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + ext;
         String uploadPath = getServletContext().getRealPath("/images");
+
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
 
-        filePart.write(uploadPath + File.separator + fileName);
+        String fullPath = uploadPath + File.separator + fileName;
+        System.out.println("[BlogController] Saving image: " + fullPath);
+
+        try {
+            filePart.write(fullPath);
+            File saved = new File(fullPath);
+            System.out.println("[BlogController] File saved? " + saved.exists() +
+                    ", size=" + (saved.exists() ? saved.length() : 0));
+        } catch (Exception ex) {
+            System.out.println("[BlogController] Error saving file: " + ex.getMessage());
+            ex.printStackTrace();
+            return null;
+        }
+
         return fileName;
     }
 }
