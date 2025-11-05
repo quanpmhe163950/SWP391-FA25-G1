@@ -41,7 +41,7 @@ public class BlogController extends HttpServlet {
             case "delete": {
                 Object acct = request.getSession().getAttribute("account");
                 if (!isManager(acct)) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Chỉ Manager mới có quyền xóa bài viết");
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "");
                     return;
                 }
 
@@ -115,7 +115,7 @@ public class BlogController extends HttpServlet {
         try {
             if ("add".equalsIgnoreCase(action)) {
                 if (!isManager(acct)) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Chỉ Manager mới có quyền thêm bài viết");
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "");
                     return;
                 }
                 handleAdd(request, dao, (User) acct);
@@ -124,7 +124,7 @@ public class BlogController extends HttpServlet {
 
             } else if ("update".equalsIgnoreCase(action)) {
                 if (!isManager(acct)) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Chỉ Manager mới có quyền sửa bài viết");
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "");
                     return;
                 }
                 handleUpdate(request, dao);
