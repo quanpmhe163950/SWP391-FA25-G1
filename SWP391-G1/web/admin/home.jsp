@@ -119,14 +119,10 @@
     <div class="main-container">
         <!-- Navbar -->
         <div class="navbar">
-            <h1>Dashboard Overview</h1>
-            <div class="user-info">
-                <span class="username">Welcome, Admin</span>
-                <form action="logout" method="post" style="margin: 0;">
-                    <button type="submit">Logout</button>
-                </form>
-            </div>
-        </div>
+    <h1>Dashboard Overview</h1>
+    <jsp:include page="user-info.jsp" />
+</div>
+
 
         <!-- Main content -->
         <div class="main-content">

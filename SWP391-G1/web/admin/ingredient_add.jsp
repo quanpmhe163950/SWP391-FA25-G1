@@ -11,7 +11,6 @@
             min-height: 100vh;
         }
 
-        /* KHÔNG ghi đè sidebar, chỉ định dạng vùng main-content */
         .main-content {
             flex: 1;
             padding: 40px;
@@ -79,33 +78,38 @@
         .back-link:hover {
             text-decoration: underline;
         }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Import sidebar (giữ nguyên CSS của admin-panel.jsp) -->
+    <!-- Import sidebar -->
     <jsp:include page="admin-panel.jsp" />
-
-    <!-- Phần nội dung chính -->
+<jsp:include page="user-info.jsp" />
     <div class="main-content">
         <div class="form-container">
             <h2>Add New Ingredient</h2>
 
-            <form action="${pageContext.request.contextPath}/admin/ingredient" method="post">
+            <form id="addIngredientForm" action="${pageContext.request.contextPath}/admin/ingredient" method="post">
                 <input type="hidden" name="action" value="add" />
 
                 <label>Name:</label>
-                <input type="text" name="name" required />
+                <input type="text" id="ingredientName" name="name" required />
 
                 <label>Unit:</label>
                 <select name="unit" required>
                     <option value="kg">Kg</option>
+                    <option value="g">g</option>
                     <option value="ml">ml</option>
                     <option value="l">L</option>
                 </select>
-
-                <label>Price:</label>
-                <input type="number" step="0.01" name="price" value="0" required />
 
                 <input type="submit" value="Save" />
             </form>
@@ -113,6 +117,20 @@
             <a href="${pageContext.request.contextPath}/admin/ingredient" class="back-link">← Back to list</a>
         </div>
     </div>
+
+    <script>
+        // Validate: Name không được rỗng hoặc toàn khoảng trắng
+        document.getElementById("addIngredientForm").addEventListener("submit", function(e) {
+            const nameInput = document.getElementById("ingredientName");
+            const nameValue = nameInput.value.trim();
+
+            if (nameValue === "") {
+                e.preventDefault();
+                alert("Ingredient name cannot be empty or just spaces!");
+                nameInput.focus();
+            }
+        });
+    </script>
 
 </body>
 </html>

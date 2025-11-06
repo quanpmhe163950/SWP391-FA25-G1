@@ -7,6 +7,13 @@ import model.Ingredient;
 
 public class SupplierDAO extends DBContext {
 
+    public SupplierDAO(Connection conn) {
+        this.connection = connection;
+    }
+
+    public SupplierDAO() {
+    }
+
     // ===========================================
     // ============== SUPPLIER CRUD ==============
     // ===========================================
@@ -182,6 +189,115 @@ public class SupplierDAO extends DBContext {
     } catch (SQLException e) {
         e.printStackTrace();
     }
+}
+
+    public List<Supplier> searchSupplierByName(String keyword) {
+    List<Supplier> list = new ArrayList<>();
+
+    String sql = "SELECT SupplierID, SupplierName, Phone, Email, Address, IsActive " +
+                 "FROM Supplier " +
+                 "WHERE SupplierName LIKE ? AND IsActive = 1 " +
+                 "ORDER BY SupplierName ASC";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        ps.setString(1, "%" + keyword + "%");
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Supplier s = new Supplier();
+                s.setSupplierID(rs.getInt("SupplierID"));
+                s.setSupplierName(rs.getString("SupplierName"));
+                s.setPhone(rs.getString("Phone"));
+                s.setEmail(rs.getString("Email"));
+                s.setAddress(rs.getString("Address"));
+                s.setActive(rs.getBoolean("IsActive"));
+                list.add(s);
+            }
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
+    public List<Supplier> getTopSuppliers(int limit) {
+    List<Supplier> list = new ArrayList<>();
+
+    String sql = "SELECT TOP(?) SupplierID, SupplierName, Phone, Email, Address, IsActive " +
+                 "FROM Supplier " +
+                 "WHERE IsActive = 1 " +
+                 "ORDER BY SupplierName ASC";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        ps.setInt(1, limit);
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Supplier s = new Supplier();
+                s.setSupplierID(rs.getInt("SupplierID"));
+                s.setSupplierName(rs.getString("SupplierName"));
+                s.setPhone(rs.getString("Phone"));
+                s.setEmail(rs.getString("Email"));
+                s.setAddress(rs.getString("Address"));
+                s.setActive(rs.getBoolean("IsActive"));
+                list.add(s);
+            }
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+public String getSupplierNameById(int id) {
+    String sql = "SELECT SupplierName FROM Supplier WHERE SupplierID = ?";
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getString("SupplierName");
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return "";
+}
+
+// --- Lấy tên nguyên liệu theo ID ---
+public String getIngredientNameById(int ingredientID) {
+    String name = null;
+    String sql = "SELECT name FROM Ingredients WHERE id = ?"; // ✅ đổi tên bảng + cột
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, ingredientID);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                name = rs.getString("name"); // ✅ đổi tên cột
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return name;
+}
+public String getIngredientUnitById(int ingredientID) {
+    String unit = "";
+    String sql = "SELECT Unit FROM Ingredients WHERE id = ?";
+    try (PreparedStatement st = connection.prepareStatement(sql)) {
+        st.setInt(1, ingredientID);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            unit = rs.getString("Unit");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return unit;
 }
 
 }

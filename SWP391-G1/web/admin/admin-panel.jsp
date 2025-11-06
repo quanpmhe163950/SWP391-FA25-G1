@@ -1,5 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
+<%
+    String currentPath = request.getRequestURI(); // Lấy URL hiện tại
+%>
+
 <style>
     body {
         margin: 0;
@@ -31,13 +35,21 @@
         margin: 6px 0;
         cursor: pointer;
         border-radius: 8px;
-        transition: background 0.3s;
+        transition: background 0.3s, color 0.3s;
         color: white;
         text-decoration: none;
+        display: block;
     }
 
     .menu-item:hover {
         background-color: #34495e;
+    }
+
+    /* Khi active */
+    .menu-item.active {
+        background-color: #1abc9c;
+        font-weight: bold;
+        color: #fff;
     }
 
     /* Navbar */
@@ -94,13 +106,31 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <h2>Admin Panel</h2>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/account">User Management</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/supplier-ingredient">Suppliers</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/purchase">Purchase Orders</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/food">Products</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/recipe">Recipes</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/feedback">Feedback</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/dashboard") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/account") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/account">Customer Management</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/staff") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/ingredient") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/supplier-ingredient") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/supplier-ingredient">Suppliers</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/purchase-order") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/purchase-order">Purchase Orders</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/food") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/food">Products</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/recipe") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/recipe">Recipes</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/feedback") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/admin/feedback">Feedback</a>
 </div>

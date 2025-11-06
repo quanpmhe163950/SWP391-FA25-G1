@@ -122,6 +122,14 @@
             color: #888;
             font-size: 16px;
         }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 
     <script>
@@ -141,7 +149,7 @@
 
     <!-- Sidebar -->
     <jsp:include page="admin-panel.jsp" />
-
+    <jsp:include page="user-info.jsp" />
     <!-- Nội dung chính -->
     <div class="main-content">
         <h2>Staff Management</h2>

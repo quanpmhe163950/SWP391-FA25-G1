@@ -12,6 +12,13 @@
             height: 100vh;
             overflow: hidden;
         }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
 
     </style>
     <title>Quản lý nguyên liệu theo nhà cung cấp</title>
@@ -22,7 +29,7 @@
 <body class="bg-light">
     <!-- ✅ Thêm sidebar -->
     <jsp:include page="admin-panel.jsp" />
-
+    <jsp:include page="user-info.jsp" />
 <div class="container mt-4">
     <h3 class="mb-3 text-center text-primary fw-bold">QUẢN LÝ NGUYÊN LIỆU THEO NHÀ CUNG CẤP</h3>
 
@@ -316,6 +323,45 @@ $(document).on('click', '#confirmSaveBtn', function () {
     });
 });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const forms = document.querySelectorAll("form");
+
+    forms.forEach(form => {
+        form.addEventListener("submit", function (e) {
+            const textInputs = form.querySelectorAll("input[type='text']");
+
+            for (let input of textInputs) {
+                const value = input.value.trim();
+
+                // Kiểm tra để trống hoặc toàn khoảng trắng
+                if (value === "") {
+                    e.preventDefault();
+                    const labelText = (input.previousElementSibling && input.previousElementSibling.innerText)
+                        ? input.previousElementSibling.innerText
+                        : input.name;
+                    alert(`Trường "${labelText}" không được để trống hoặc chỉ có khoảng trắng!`);
+                    input.focus();
+                    return;
+                }
+
+                // Kiểm tra ký tự đặc biệt (chỉ cho chữ, số, dấu và khoảng trắng)
+                const invalidChars = /[^a-zA-ZÀ-ỹ\s\d]/u;
+                if (invalidChars.test(value)) {
+                    e.preventDefault();
+                    const labelText = (input.previousElementSibling && input.previousElementSibling.innerText)
+                        ? input.previousElementSibling.innerText
+                        : input.name;
+                    alert(`Trường "${labelText}" không được chứa ký tự đặc biệt!`);
+                    input.focus();
+                    return;
+                }
+            }
+        });
+    });
+});
+</script>
+
 <script>
 $(document).on("click", ".add-ingredient-btn", function () {
   const row = $(this).closest("tr");
