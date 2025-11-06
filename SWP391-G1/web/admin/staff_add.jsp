@@ -13,7 +13,6 @@
             overflow: hidden;
         }
 
-        /* ====== Nội dung chính ====== */
         .main-content {
             flex: 1;
             display: flex;
@@ -23,7 +22,6 @@
             overflow-y: auto;
         }
 
-        /* ====== Form card ====== */
         .form-container {
             background: #fff;
             padding: 30px 40px;
@@ -100,23 +98,29 @@
             margin-top: 10px;
             font-weight: 500;
         }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Import sidebar -->
     <jsp:include page="admin-panel.jsp" />
-
-    <!-- Nội dung chính -->
+    <jsp:include page="user-info.jsp" />
     <div class="main-content">
         <div class="form-container">
             <h2>Add New Staff</h2>
 
-            <form action="${pageContext.request.contextPath}/admin/staff" method="post">
+            <form id="addStaffForm" action="${pageContext.request.contextPath}/admin/staff" method="post">
                 <input type="hidden" name="action" value="add"/>
 
                 <label>Full Name:</label>
-                <input type="text" name="fullname" required />
+                <input type="text" id="fullname" name="fullname" required />
 
                 <label>Role:</label>
                 <select name="role">
@@ -144,9 +148,21 @@
     </div>
 
     <script>
-        // Set min date = hôm nay để disable ngày quá khứ
+        // Set min date = hôm nay
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("startDate").setAttribute("min", today);
+
+        // Validate Full Name
+        document.getElementById("addStaffForm").addEventListener("submit", function(e) {
+            const fullnameInput = document.getElementById("fullname");
+            const fullname = fullnameInput.value.trim();
+
+            if (fullname === "") {
+                e.preventDefault();
+                alert("Full Name cannot be empty or just spaces!");
+                fullnameInput.focus();
+            }
+        });
     </script>
 
 </body>

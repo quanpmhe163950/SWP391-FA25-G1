@@ -6,6 +6,13 @@ import java.util.*;
 
 public class AccountDAO extends DBContext {
 
+    public AccountDAO(Connection conn) {
+this.connection = connection;
+    }
+
+    public AccountDAO() {
+    }
+
     // ✅ Lấy tất cả Customer (RoleID = 3 chẳng hạn, tuỳ bạn định nghĩa trong DB)
     // Nếu bạn dùng RoleID = 2 cho Customer thì đổi lại nhé.
     public List<User> getAllCustomers(String phoneFilter) {
@@ -79,4 +86,24 @@ public class AccountDAO extends DBContext {
         }
         return null;
     }
+    public String getUserFullNameById(int userId) {
+    String fullName = null;
+    String sql = "SELECT FullName FROM [User] WHERE UserID = ?";
+
+    try (PreparedStatement st = connection.prepareStatement(sql)) {
+        st.setInt(1, userId);
+
+        try (ResultSet rs = st.executeQuery()) {
+            if (rs.next()) {
+                fullName = rs.getString("FullName");
+            }
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return fullName;
+}
+
 }

@@ -10,11 +10,11 @@
     <tr style="background:#f2f2f2;">
         <th></th>
         <th>Tên nguyên liệu</th>
-        <th>Đơn vị chuẩn</th>
+        <th>Đơn vị cơ bản</th>
         <th>Giá gốc (tham khảo)</th>
         <th>Giá nhập</th>
         <th>Đơn vị nhập</th>
-        <th>SL / đơn vị nhập</th>
+        <th>SL cơ bản/ Đơn vị nhập</th>
         <th>Số lượng nhập</th>
     </tr>
 
@@ -43,6 +43,9 @@
                     <select id="unit_<%= ing.getId() %>">
                         <option value="thùng">Thùng</option>
                         <option value="gói">Gói</option>
+                        <option value="bao">Bao</option>
+                        <option value="chai">Chai</option>
+                        <option value="hộp">Hộp</option>
                         <option value="<%= ing.getUnit() %>"><%= ing.getUnit() %></option>
                     </select>
                 </td>

@@ -131,13 +131,21 @@
 
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #bbb; border-radius: 8px; }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 </head>
 <body>
 
     <!-- ✅ Sidebar -->
     <jsp:include page="admin-panel.jsp" />
-
+    <jsp:include page="user-info.jsp" />
     <div class="main-container">
 
         <!-- ✅ Navbar -->

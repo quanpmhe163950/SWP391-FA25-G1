@@ -42,29 +42,32 @@ public class IngredientController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
-        String action = request.getParameter("action");
+    request.setCharacterEncoding("UTF-8");
+    String action = request.getParameter("action");
 
-        if ("add".equals(action)) {
-    Ingredient i = new Ingredient();
-    i.setName(request.getParameter("name"));
-    i.setUnit(request.getParameter("unit"));
-    i.setQuantity(0); // mặc định 0 khi thêm mới
-    i.setPrice(Double.parseDouble(request.getParameter("price")));
-    dao.insert(i);
-}
- else if ("edit".equals(action)) {
-            Ingredient i = new Ingredient();
-            i.setId(Integer.parseInt(request.getParameter("id")));
-            i.setName(request.getParameter("name"));
-            i.setUnit(request.getParameter("unit"));
-            i.setPrice(Double.parseDouble(request.getParameter("price")));
-            dao.update(i);
-        }
+    if ("add".equals(action)) {
+        Ingredient i = new Ingredient();
+        i.setName(request.getParameter("name"));
+        i.setUnit(request.getParameter("unit"));
+        i.setQuantity(0); // mặc định 0 khi thêm mới
 
-        response.sendRedirect(request.getContextPath() + "/admin/ingredient");
+        // ⚠️ Bỏ price vì form không có
+        dao.insert(i);
+    } 
+    else if ("edit".equals(action)) {
+        Ingredient i = new Ingredient();
+        i.setId(Integer.parseInt(request.getParameter("id")));
+        i.setName(request.getParameter("name"));
+        i.setUnit(request.getParameter("unit"));
+
+        // ⚠️ Bỏ price vì form không có
+        dao.update(i);
     }
+
+    response.sendRedirect(request.getContextPath() + "/admin/ingredient");
+}
+
 }

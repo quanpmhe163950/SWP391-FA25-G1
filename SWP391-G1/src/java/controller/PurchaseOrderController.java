@@ -1,5 +1,6 @@
 package controller;
 
+import dal.AccountDAO;
 import dal.DBContext;
 import dal.PurchaseOrderDAO;
 import dal.SupplierDAO;
@@ -21,6 +22,7 @@ public class PurchaseOrderController extends HttpServlet {
 
     private PurchaseOrderDAO poDAO;
     private SupplierDAO supplierDAO;
+    private AccountDAO accountDAO;
 
     @Override
     public void init() {
@@ -28,6 +30,7 @@ public class PurchaseOrderController extends HttpServlet {
             Connection conn = new DBContext().getConnection();
             poDAO = new PurchaseOrderDAO(conn);
             supplierDAO = new SupplierDAO(conn);
+            accountDAO = new AccountDAO(conn);
             System.out.println("✅ PurchaseOrderController initialized successfully!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,23 +264,38 @@ public class PurchaseOrderController extends HttpServlet {
     // 7. SHOW ORDER DETAIL
     // ======================================================
     private void showOrderDetail(HttpServletRequest req, HttpServletResponse resp)
-            throws Exception {
+        throws Exception {
 
-        int orderID = Integer.parseInt(req.getParameter("id"));
-        PurchaseOrder order = poDAO.getOrderById(orderID);
-        List<PurchaseOrderItem> items = poDAO.getItemsByOrder(orderID);
+    int orderID = Integer.parseInt(req.getParameter("id"));
+    PurchaseOrder order = poDAO.getOrderById(orderID);
+    List<PurchaseOrderItem> items = poDAO.getItemsByOrder(orderID);
 
-        Map<Integer, String> ingredientNames = new HashMap<>();
-        for (PurchaseOrderItem item : items) {
-            String name = supplierDAO.getIngredientNameById(item.getIngredientID());
-            ingredientNames.put(item.getIngredientID(), name);
-        }
+    // ✅ Tạo map chứa tên & đơn vị của nguyên liệu
+    Map<Integer, String> ingredientNames = new HashMap<>();
+    Map<Integer, String> ingredientUnits = new HashMap<>();
 
-        req.setAttribute("order", order);
-        req.setAttribute("items", items);
-        req.setAttribute("ingredientNames", ingredientNames);
-        req.getRequestDispatcher("/admin/purchase_order_detail.jsp").forward(req, resp);
+    for (PurchaseOrderItem item : items) {
+        int ingredientId = item.getIngredientID();
+        String name = supplierDAO.getIngredientNameById(ingredientId);
+        String unit = supplierDAO.getIngredientUnitById(ingredientId); // 👈 thêm hàm này
+        ingredientNames.put(ingredientId, name);
+        ingredientUnits.put(ingredientId, unit);
     }
+
+    // ✅ Lấy tên nhà cung cấp & người tạo
+    String supplierName = supplierDAO.getSupplierNameById(order.getSupplierID());
+    String creatorName = accountDAO.getUserFullNameById(order.getCreatedBy());
+
+    // ✅ Gửi dữ liệu sang JSP
+    req.setAttribute("order", order);
+    req.setAttribute("items", items);
+    req.setAttribute("ingredientNames", ingredientNames);
+    req.setAttribute("ingredientUnits", ingredientUnits); // 👈 thêm dòng này
+    req.setAttribute("supplierName", supplierName);
+    req.setAttribute("creatorName", creatorName);
+
+    req.getRequestDispatcher("/admin/purchase_order_detail.jsp").forward(req, resp);
+}
 
     // ======================================================
     // 8. UPDATE RECEIVED QUANTITY

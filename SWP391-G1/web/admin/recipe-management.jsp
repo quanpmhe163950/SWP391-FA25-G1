@@ -98,13 +98,21 @@
     color: #888;
     font-size: 16px;
 }
+        /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 </head>
 <body>
     <div class="sidebar"> 
         <jsp:include page="admin-panel.jsp"/>
     </div>
-
+    <jsp:include page="user-info.jsp" />
     <div class="main-content">
         <h2>Quản lý công thức món ăn</h2>
 <div class="search-bar">
@@ -625,6 +633,47 @@ function escapeJs(s) {
     if (s === null || s === undefined) return '';
     return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const forms = document.querySelectorAll("form");
+
+    forms.forEach(form => {
+        form.addEventListener("submit", function (e) {
+            // chọn tất cả input text + textarea trong form
+            const textInputs = form.querySelectorAll("input[type='text'], textarea");
+
+            for (let input of textInputs) {
+                const value = input.value.trim();
+
+                // Kiểm tra để trống hoặc toàn khoảng trắng
+                if (value === "") {
+                    e.preventDefault();
+                    const labelText =
+                        (input.previousElementSibling && input.previousElementSibling.innerText)
+                            ? input.previousElementSibling.innerText
+                            : input.name;
+                    alert(`Trường "${labelText}" không được để trống hoặc chỉ có khoảng trắng!`);
+                    input.focus();
+                    return;
+                }
+
+                // Kiểm tra ký tự đặc biệt (chỉ cho chữ, số, dấu và khoảng trắng)
+                const invalidChars = /[^a-zA-ZÀ-ỹ0-9\s.,!?()-]/u;
+                if (invalidChars.test(value)) {
+                    e.preventDefault();
+                    const labelText =
+                        (input.previousElementSibling && input.previousElementSibling.innerText)
+                            ? input.previousElementSibling.innerText
+                            : input.name;
+                    alert(`Trường "${labelText}" không được chứa ký tự đặc biệt!`);
+                    input.focus();
+                    return;
+                }
+            }
+        });
+    });
+});
 </script>
 
 </body>

@@ -285,5 +285,19 @@ public String getIngredientNameById(int ingredientID) {
     }
     return name;
 }
+public String getIngredientUnitById(int ingredientID) {
+    String unit = "";
+    String sql = "SELECT Unit FROM Ingredients WHERE id = ?";
+    try (PreparedStatement st = connection.prepareStatement(sql)) {
+        st.setInt(1, ingredientID);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            unit = rs.getString("Unit");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return unit;
+}
 
 }

@@ -73,12 +73,13 @@
             text-decoration: none;
             color: #2196F3;
         }
+                /* ===== Header giống home ===== */
     </style>
 </head>
 <body>
     <!-- Import sidebar -->
     <jsp:include page="admin-panel.jsp" />
-
+    <jsp:include page="user-info.jsp" />
     <div class="main-content">
         <div class="form-container">
             <h2>Edit Ingredient</h2>
@@ -92,6 +93,7 @@
                 <label>Unit:</label>
                 <select name="unit" required>
                     <option value="kg" ${ingredient.unit == 'kg' ? 'selected' : ''}>Kg</option>
+                    <option value="g" ${ingredient.unit == 'g' ? 'selected' : ''}>g</option>
                     <option value="ml" ${ingredient.unit == 'ml' ? 'selected' : ''}>ml</option>
                     <option value="l" ${ingredient.unit == 'l' ? 'selected' : ''}>L</option>
                 </select>

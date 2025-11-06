@@ -113,6 +113,14 @@
             color: #777;
             font-style: italic;
         }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 </head>
 <body>
@@ -120,7 +128,10 @@
     <jsp:include page="admin-panel.jsp" />
 
     <div class="main-content">
-        <h2>Ingredient List</h2>
+                <div class="header-bar">
+            <h2>Ingredient List</h2>
+            <jsp:include page="user-info.jsp" />
+        </div>
 
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search ingredient name..." />
@@ -160,63 +171,67 @@
     </div>
 
     <script>
-        const rowsPerPage = 10;
-        const table = document.getElementById("ingredientTable").getElementsByTagName("tbody")[0];
-        const rows = Array.from(table.getElementsByTagName("tr"));
-        const pagination = document.getElementById("pagination");
-        const searchInput = document.getElementById("searchInput");
+    const rowsPerPage = 10;
+    const table = document.getElementById("ingredientTable").getElementsByTagName("tbody")[0];
+    const rows = Array.from(table.getElementsByTagName("tr"));
+    const pagination = document.getElementById("pagination");
+    const searchInput = document.getElementById("searchInput");
 
-        let currentPage = 1;
-        let filteredRows = rows;
+    let currentPage = 1;
+    let filteredRows = rows;
 
-        function renderTable() {
-            // Xóa hết dòng trước
-            table.innerHTML = "";
+    function renderTable() {
+        table.innerHTML = "";
 
-            // Tính start & end
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageRows = filteredRows.slice(start, end);
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const pageRows = filteredRows.slice(start, end);
 
-            if (pageRows.length === 0) {
-                table.innerHTML = '<tr><td colspan="5" class="empty-row">No ingredients found.</td></tr>';
-            } else {
-                pageRows.forEach(r => table.appendChild(r));
-            }
-
-            renderPagination();
+        if (pageRows.length === 0) {
+            table.innerHTML = '<tr><td colspan="5" class="empty-row">No ingredients found.</td></tr>';
+        } else {
+            pageRows.forEach(r => table.appendChild(r));
         }
 
-        function renderPagination() {
-            pagination.innerHTML = "";
-            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-            if (totalPages <= 1) return;
+        renderPagination();
+    }
 
-            for (let i = 1; i <= totalPages; i++) {
-                const btn = document.createElement("button");
-                btn.textContent = i;
-                if (i === currentPage) btn.classList.add("active");
-                btn.addEventListener("click", () => {
-                    currentPage = i;
-                    renderTable();
-                });
-                pagination.appendChild(btn);
-            }
-        }
+    function renderPagination() {
+        pagination.innerHTML = "";
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
 
-        function filterTable() {
-            const keyword = searchInput.value.toLowerCase();
-            filteredRows = rows.filter(r => {
-                const name = r.cells[1]?.textContent.toLowerCase() || "";
-                return name.includes(keyword);
+        // Nếu không có dữ liệu -> không hiển thị nút phân trang
+        if (filteredRows.length === 0) return;
+
+        // Luôn hiển thị ít nhất 1 nút (trang 1)
+        const pagesToRender = totalPages > 0 ? totalPages : 1;
+
+        for (let i = 1; i <= pagesToRender; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            if (i === currentPage) btn.classList.add("active");
+            btn.addEventListener("click", () => {
+                currentPage = i;
+                renderTable();
             });
-            currentPage = 1;
-            renderTable();
+            pagination.appendChild(btn);
         }
+    }
 
-        searchInput.addEventListener("input", filterTable);
-
+    function filterTable() {
+        const keyword = searchInput.value.toLowerCase();
+        filteredRows = rows.filter(r => {
+            const name = r.cells[1]?.textContent.toLowerCase() || "";
+            return name.includes(keyword);
+        });
+        currentPage = 1;
         renderTable();
-    </script>
+    }
+
+    searchInput.addEventListener("input", filterTable);
+
+    renderTable();
+</script>
+
 </body>
 </html>

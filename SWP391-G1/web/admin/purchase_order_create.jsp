@@ -59,6 +59,14 @@
         }
         .btn-green { background: #27ae60; }
         .btn-blue { background: #3498db; }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 
     <script>
@@ -108,28 +116,37 @@
 
         // Chuyển object sang JSON string trước khi submit form
         function beforeSubmit() {
-            const supplierID = document.getElementById("supplierID").value;
-            if (!supplierID) {
-                alert("⚠️ Vui lòng chọn nhà cung cấp!");
-                return false;
-            }
+    const supplierID = document.getElementById("supplierID").value;
 
-            const items = collectSelectedIngredients();
-            if (items.length === 0) {
-                alert("⚠️ Vui lòng chọn ít nhất một nguyên liệu!");
-                return false;
-            }
+    if (!supplierID) {
+        alert("⚠️ Vui lòng chọn nhà cung cấp!");
+        document.getElementById("supplierID").focus();
+        return false;
+    }
 
-            // Gắn dữ liệu vào hidden input
-            document.getElementById("itemsData").value = JSON.stringify(items);
-            return true;
+    const items = collectSelectedIngredients();
+
+    if (items.length === 0) {
+        alert("⚠️ Vui lòng chọn ít nhất một nguyên liệu để tạo đơn hàng!");
+        
+        // Scroll đến phần nguyên liệu để user thấy chỗ cần chọn
+        const ingredientArea = document.getElementById("ingredientArea");
+        if (ingredientArea) {
+            ingredientArea.scrollIntoView({ behavior: "smooth", block: "center" });
         }
+        return false;
+    }
+
+    // ✅ Nếu hợp lệ, gắn dữ liệu vào hidden input
+    document.getElementById("itemsData").value = JSON.stringify(items);
+    return true;
+}
     </script>
 </head>
 
 <body>
     <jsp:include page="admin-panel.jsp" />
-
+    <jsp:include page="user-info.jsp" />
     <div class="main-container">
         <div class="navbar">
             <h1>Tạo đơn đặt hàng</h1>
@@ -155,10 +172,7 @@
                     </select>
 
                     <br><br>
-                    <label>Ghi chú:</label><br>
-                    <input type="text" name="note" id="note" style="width: 400px;">
-
-                    <br><br>
+                    
                     <button class="btn btn-green" type="submit">Tạo đơn</button>
                 </form>
             </div>

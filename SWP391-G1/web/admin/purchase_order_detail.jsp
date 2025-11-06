@@ -8,13 +8,15 @@
     PurchaseOrder order = (PurchaseOrder) request.getAttribute("order");
     List<PurchaseOrderItem> items = (List<PurchaseOrderItem>) request.getAttribute("items");
     Map<Integer, String> ingredientNames = (Map<Integer, String>) request.getAttribute("ingredientNames");
+    Map<Integer, String> ingredientUnits = (Map<Integer, String>) request.getAttribute("ingredientUnits");
+    String supplierName = (String) request.getAttribute("supplierName");  // ✅ thêm dòng này
+    String creatorName = (String) request.getAttribute("creatorName");    // ✅ thêm dòng này
 %>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Chi tiết đơn đặt hàng</title>
-
     <style>
         body {
             margin: 0;
@@ -67,11 +69,16 @@
         th, td {
             padding: 10px;
             border-bottom: 1px solid #eee;
+            text-align: left;
         }
 
         th {
             background: #f0f0f0;
-            text-align: left;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #fafafa;
         }
 
         .btn {
@@ -84,24 +91,34 @@
             cursor: pointer;
         }
 
-        .btn-green { background: #27ae60; }
-        .btn-red { background: #e74c3c; }
+        .btn:hover {
+            background: #2c80c9;
+        }
+
+        .status {
+            font-weight: 600;
+        }
+                /* ===== Header giống home ===== */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
     </style>
 </head>
 <body>
 
     <!-- ✅ Sidebar -->
     <jsp:include page="admin-panel.jsp" />
-
+    <jsp:include page="user-info.jsp" />
     <div class="main-container">
 
         <!-- ✅ Navbar -->
         <div class="navbar">
             <h1>Chi tiết đơn đặt hàng #<%= order.getPurchaseOrderID() %></h1>
-
-            <a href="purchase-order" class="btn">
-                ← Quay lại danh sách
-            </a>
+            <a href="purchase-order" class="btn">← Quay lại danh sách</a>
         </div>
 
         <!-- ✅ Main Content -->
@@ -111,18 +128,15 @@
             <div class="box">
                 <h3>Thông tin đơn hàng</h3>
 
-                <p><b>Nhà cung cấp:</b> <%= order.getSupplierID() %></p>
-                <p><b>Người tạo:</b> <%= order.getCreatedBy() %></p>
+                <p><b>Nhà cung cấp:</b> <%= supplierName %></p>
                 <p><b>Ngày tạo:</b> <%= order.getOrderDate() %></p>
-                <p><b>Ghi chú:</b> <%= order.getNote() == null ? "(Không có)" : order.getNote() %></p>
 
                 <p>
                     <b>Trạng thái:</b>
-                    <span style="color:
-                        <%= order.getStatus().equals("pending") ? "orange" : 
+                    <span class="status" style="color:
+                        <%= order.getStatus().equals("pending") ? "orange" :
                             order.getStatus().equals("partial") ? "#cc9900" :
                             order.getStatus().equals("received") ? "green" : "red" %>">
-                        
                         <%= 
                             order.getStatus().equals("pending") ? "Chờ nhận" :
                             order.getStatus().equals("partial") ? "Nhận một phần" :
@@ -141,6 +155,7 @@
                     <tr>
                         <th>Tên nguyên liệu</th>
                         <th>Đơn vị nhập</th>
+                        <th>Đơn vị cơ bản</th> <!-- ✅ Thêm cột -->
                         <th>SL / Đơn vị nhập</th>
                         <th>Số lượng đặt</th>
                         <th>Đơn giá</th>
@@ -149,23 +164,22 @@
 
                     <% if (items == null || items.isEmpty()) { %>
                         <tr>
-                            <td colspan="6" style="text-align:center; padding: 15px;">
+                            <td colspan="7" style="text-align:center; padding: 15px;">
                                 Chưa có nguyên liệu nào.
                             </td>
                         </tr>
                     <% } else { %>
-
                         <% for (PurchaseOrderItem item : items) { %>
                             <tr>
                                 <td><%= ingredientNames != null ? ingredientNames.get(item.getIngredientID()) : "N/A" %></td>
                                 <td><%= item.getUnitType() %></td>
+                                <td><%= ingredientUnits != null ? ingredientUnits.get(item.getIngredientID()) : "N/A" %></td>
                                 <td><%= item.getSubQuantityPerUnit() %></td>
                                 <td><%= item.getUnitQuantity() %></td>
                                 <td><%= String.format("%,.0f", item.getPricePerUnit()) %> VND</td>
                                 <td><%= String.format("%,.0f", item.getPricePerUnit() * item.getUnitQuantity()) %> VND</td>
                             </tr>
                         <% } %>
-
                     <% } %>
                 </table>
             </div>

@@ -5,6 +5,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import model.User;
@@ -116,19 +117,36 @@ public class StaffController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/admin/staff");
     }
 
-    // --- Sinh username tự động ---
-    private String generateUsername(String fullname, java.sql.Date startDate) {
-        String[] parts = fullname.trim().toLowerCase().split("\\s+");
-        String name = parts[parts.length - 1];
-        StringBuilder initials = new StringBuilder();
-        for (int i = 0; i < parts.length - 1; i++) {
-            initials.append(parts[i].charAt(0));
-        }
+private String generateUsername(String fullname, java.sql.Date startDate) {
+    // Bỏ dấu & chuyển về chữ thường
+    String cleanName = removeVietnameseAccents(fullname.trim().toLowerCase());
 
-        String datePart = new SimpleDateFormat("ddMMyyyy").format(startDate);
-        int count = dao.countAccountsByDate(startDate);
-        String sequence = String.format("%03d", count + 1);
+    // Tách họ tên
+    String[] parts = cleanName.split("\\s+");
+    String name = parts[parts.length - 1]; // Lấy tên cuối cùng
 
-        return name + initials + datePart + sequence;
+    StringBuilder initials = new StringBuilder();
+    for (int i = 0; i < parts.length - 1; i++) {
+        initials.append(parts[i].charAt(0));
     }
+
+    // Tạo phần ngày
+    String datePart = new SimpleDateFormat("ddMMyyyy").format(startDate);
+
+    // Đếm số tài khoản cùng ngày để tạo thứ tự
+    int count = dao.countAccountsByDate(startDate);
+    String sequence = String.format("%03d", count + 1);
+
+    return name + initials + datePart + sequence;
+}
+
+// --- Hàm hỗ trợ: Bỏ dấu tiếng Việt ---
+private String removeVietnameseAccents(String input) {
+    if (input == null) return "";
+    String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+    return normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                     .replaceAll("đ", "d")
+                     .replaceAll("Đ", "D");
+}
+
 }
