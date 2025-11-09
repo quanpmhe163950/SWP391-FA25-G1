@@ -635,37 +635,94 @@ function escapeJs(s) {
 }
 </script>
 <script>
+// ======= XỬ LÝ PHÂN TRANG MENU (giữ nguyên như cũ) =======
+const rowsPerPageMenu = 10;
+let currentPageMenu = 1;
+
+window.addEventListener("DOMContentLoaded", () => {
+    paginateMenu();
+    setupModalCloseEvents(); // 👈 thêm dòng này
+});
+
+function filterMenu() {
+    currentPageMenu = 1;
+    paginateMenu();
+}
+
+function paginateMenu() {
+    const rows = Array.from(document.querySelectorAll("#menuBody tr"));
+    const keyword = document.getElementById("menuSearch").value.trim().toLowerCase();
+    const filtered = rows.filter(r => r.children[1].textContent.toLowerCase().includes(keyword));
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPageMenu));
+    filtered.forEach((r, idx) => {
+        r.style.display = (idx >= (currentPageMenu - 1) * rowsPerPageMenu && idx < currentPageMenu * rowsPerPageMenu)
+            ? "" : "none";
+    });
+    rows.forEach(r => { if (!filtered.includes(r)) r.style.display = "none"; });
+
+    const pag = document.getElementById("menuPagination");
+    pag.innerHTML = "";
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPageMenu) btn.disabled = true;
+        btn.onclick = () => { currentPageMenu = i; paginateMenu(); };
+        pag.appendChild(btn);
+    }
+}
+
+/* ======= ĐÓNG MODAL: thêm auto close ======= */
+function setupModalCloseEvents() {
+    // click ra ngoài để đóng modal
+    document.querySelectorAll(".modal").forEach(modal => {
+        modal.addEventListener("click", e => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+}
+
+function closeRecipe() {
+    const modalView = document.getElementById("viewRecipeModal");
+    if (modalView) modalView.style.display = "none";
+}
+function closeAddRecipe() {
+    const addModal = document.getElementById("addRecipeModal");
+    if (addModal) addModal.style.display = "none";
+}
+function closeEditRecipe() {
+    const editModal = document.getElementById("editRecipeModal");
+    if (editModal) editModal.style.display = "none";
+}
+</script>
+
+<!-- ⚙️ VALIDATION: bỏ qua input search -->
+<script>
 document.addEventListener("DOMContentLoaded", function () {
     const forms = document.querySelectorAll("form");
 
     forms.forEach(form => {
         form.addEventListener("submit", function (e) {
-            // chọn tất cả input text + textarea trong form
-            const textInputs = form.querySelectorAll("input[type='text'], textarea");
-
+            const textInputs = form.querySelectorAll("input[type='text']:not([id$='Search']), textarea");
             for (let input of textInputs) {
                 const value = input.value.trim();
 
-                // Kiểm tra để trống hoặc toàn khoảng trắng
                 if (value === "") {
                     e.preventDefault();
-                    const labelText =
-                        (input.previousElementSibling && input.previousElementSibling.innerText)
-                            ? input.previousElementSibling.innerText
-                            : input.name;
+                    const labelText = (input.previousElementSibling && input.previousElementSibling.innerText)
+                        ? input.previousElementSibling.innerText : input.name;
                     alert(`Trường "${labelText}" không được để trống hoặc chỉ có khoảng trắng!`);
                     input.focus();
                     return;
                 }
 
-                // Kiểm tra ký tự đặc biệt (chỉ cho chữ, số, dấu và khoảng trắng)
                 const invalidChars = /[^a-zA-ZÀ-ỹ0-9\s.,!?()-]/u;
                 if (invalidChars.test(value)) {
                     e.preventDefault();
-                    const labelText =
-                        (input.previousElementSibling && input.previousElementSibling.innerText)
-                            ? input.previousElementSibling.innerText
-                            : input.name;
+                    const labelText = (input.previousElementSibling && input.previousElementSibling.innerText)
+                        ? input.previousElementSibling.innerText : input.name;
                     alert(`Trường "${labelText}" không được chứa ký tự đặc biệt!`);
                     input.focus();
                     return;
