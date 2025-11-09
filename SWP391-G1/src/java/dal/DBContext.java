@@ -9,9 +9,9 @@ import java.util.logging.Logger;
 public class DBContext {
     private static final String USER = "sa";
     private static final String PASS = "123";
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=PizzaManagement;encrypt=false;trustServerCertificate=true";
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=PizzaManagement;useUnicode=true;characterEncoding=UTF-8;encrypt=false;trustServerCertificate=true";
 
-    public Connection connection; // ⚡ dùng cho DAO
+    public static Connection connection;
 
     public DBContext() {
         try {
@@ -22,8 +22,8 @@ public class DBContext {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public Connection getConnection() {
+    // ✅ Luôn trả về connection đã mở
+    public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(URL, USER, PASS);

@@ -3,12 +3,20 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/SupplierIngredientController.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/supplierIngredientManagement.jsp</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/StaffController.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/recipe-management.jsp</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/ingredient_add.jsp</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/RecipeController.java</file>
+=======
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/SWP391-FA25-G1/SWP391-G1/src/java/model/Category.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/SWP391-FA25-G1/SWP391-G1/web/listCategory.jsp</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/SWP391-FA25-G1/SWP391-G1/src/java/controller/EditCategoryServlet.java</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/SWP391-FA25-G1/SWP391-G1/web/editCategory.jsp</file>
+            <file>file:/C:/Users/admin/Documents/NetBeansProjects/SWP391-FA25-G1/SWP391-G1/src/java/dal/CategoryDAO.java</file>
+>>>>>>> a2214f7 (Initial commit)
         </group>
     </open-files>
 </project-private>
