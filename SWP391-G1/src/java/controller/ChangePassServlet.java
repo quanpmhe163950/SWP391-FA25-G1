@@ -4,7 +4,7 @@
  */
 package controller;
 
-import dal.UserDao;
+import dal.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,12 +12,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.User;
+import util.PasswordUtil;
 
 /**
  *
  * @author ASUS
  */
 public class ChangePassServlet extends HttpServlet {
+
+    private final CustomerDAO dao = new CustomerDAO();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -54,58 +58,93 @@ public class ChangePassServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+ @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
-      request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
+        if (!isLoggedIn(request, response)) return;
+
+        request.setAttribute("pageContent", "ChangePassword.jsp");
+        request.getRequestDispatcher("CustomerPage.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (!isLoggedIn(request, response)) return;
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("account");
+        String username = user.getUsername();
+
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
-//        HttpSession session = request.getSession();
-        String username = "bnguyenthi";
-
-//        if (username == null) {
-//            request.setAttribute("error", "Vui lòng đăng nhập để đổi mật khẩu!");
-//            request.getRequestDispatcher("login.jsp").forward(request, response);
-//            return;
-//        }
+        // ===== Validate =====
+        if (isEmpty(currentPassword) || isEmpty(newPassword) || isEmpty(confirmPassword)) {
+            setError(request, "Vui lòng nhập đầy đủ thông tin!");
+            forward(request, response);
+            return;
+        }
 
         if (!newPassword.equals(confirmPassword)) {
-            request.setAttribute("error", "Mật khẩu mới và xác nhận không khớp!");
-            request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
+            setError(request, "Mật khẩu mới và xác nhận không khớp!");
+            forward(request, response);
             return;
         }
 
-        UserDao dao = new UserDao();
-        boolean isCorrect = dao.checkCurrentPassword(username, currentPassword);
-        if (!isCorrect) {
-            request.setAttribute("error", "Mật khẩu hiện tại không đúng!");
-            request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
+        if (newPassword.length() < 6) {
+            setError(request, "Mật khẩu mới phải có ít nhất 6 ký tự!");
+            forward(request, response);
             return;
         }
 
-        boolean updated = dao.updatePassword(username, newPassword);
-        if (updated) {
-            request.setAttribute("success", "Đổi mật khẩu thành công!");
+        // ===== Kiểm tra mật khẩu hiện tại =====
+        User dbUser = dao.getUserByUsername(username); // Hàm lấy user từ DB
+        if (dbUser == null || !PasswordUtil.checkPassword(currentPassword, dbUser.getPasswordHash())) {
+            setError(request, "Mật khẩu hiện tại không đúng!");
+            forward(request, response);
+            return;
+        }
+
+        // ===== Hash mật khẩu mới và update =====
+        String hashedNewPassword = PasswordUtil.hashPassword(newPassword);
+        if (dao.updatePassword(username, hashedNewPassword)) {
+            setSuccess(request, "Đổi mật khẩu thành công!");
         } else {
-            request.setAttribute("error", "Lỗi khi cập nhật mật khẩu!");
+            setError(request, "Có lỗi xảy ra, vui lòng thử lại!");
         }
-        request.getRequestDispatcher("ChangePassword.jsp").forward(request, response);
+
+        forward(request, response);
+    }
+
+    // ================= Hỗ trợ =================
+
+    private boolean isLoggedIn(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("account") == null) {
+            res.sendRedirect("login.jsp");
+            return false;
+        }
+        return true;
+    }
+
+    private void setError(HttpServletRequest req, String message) {
+        req.setAttribute("error", message);
+    }
+
+    private void setSuccess(HttpServletRequest req, String message) {
+        req.setAttribute("success", message);
+    }
+
+    private void forward(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        req.setAttribute("pageContent", "ChangePassword.jsp");
+        req.getRequestDispatcher("CustomerPage.jsp").forward(req, res);
+    }
+
+    private boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
     }
 
     /**
