@@ -17,7 +17,7 @@ public class OrderDAO {
 
     public int insertOrder(String orderCode, String customerID, String waiterID, String status, String promoID) throws Exception {
         String sql = "INSERT INTO [Order] (OrderCode, CustomerID, WaiterID, OrderDate, Status, PromoID) VALUES (?, ?, ?, GETDATE(), ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, orderCode);
             ps.setString(2, customerID);

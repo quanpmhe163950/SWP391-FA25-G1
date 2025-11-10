@@ -108,29 +108,54 @@
     <h2>Admin Panel</h2>
 
     <a class="menu-item <%= currentPath.contains("/admin/dashboard") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
+       href="${pageContext.request.contextPath}/admin/dashboard">
+        Dashboard
+    </a>
 
     <a class="menu-item <%= currentPath.contains("/admin/account") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/account">Customer Management</a>
+       href="${pageContext.request.contextPath}/admin/account">
+        Customer Management
+    </a>
 
     <a class="menu-item <%= currentPath.contains("/admin/staff") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
+       href="${pageContext.request.contextPath}/admin/staff">
+        Staff Management
+    </a>
 
     <a class="menu-item <%= currentPath.contains("/admin/ingredient") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
+       href="${pageContext.request.contextPath}/admin/ingredient">
+        Inventory
+    </a>
 
     <a class="menu-item <%= currentPath.contains("/admin/supplier-ingredient") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/supplier-ingredient">Suppliers</a>
+       href="${pageContext.request.contextPath}/admin/supplier-ingredient">
+        Suppliers
+    </a>
 
     <a class="menu-item <%= currentPath.contains("/admin/purchase-order") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/purchase-order">Purchase Orders</a>
+       href="${pageContext.request.contextPath}/admin/purchase-order">
+        Purchase Orders
+    </a>
 
-    <a class="menu-item <%= currentPath.contains("/admin/food") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/food">Products</a>
+    <!-- 🔹 NEW: Category Management -->
+    <a class="menu-item <%= currentPath.contains("/listCategory") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/listCategory">
+        Categories
+    </a>
+
+    <!-- 🔹 UPDATED: Products now link to listItem -->
+    <a class="menu-item <%= currentPath.contains("/listItem") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/listItem">
+        Products
+    </a>
 
     <a class="menu-item <%= currentPath.contains("/admin/recipe") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/recipe">Recipes</a>
+       href="${pageContext.request.contextPath}/admin/recipe">
+        Recipes
+    </a>
 
     <a class="menu-item <%= currentPath.contains("/admin/feedback") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/feedback">Feedback</a>
+       href="${pageContext.request.contextPath}/admin/feedback">
+        Feedback
+    </a>
 </div>

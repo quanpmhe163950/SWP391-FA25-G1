@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -163,8 +164,8 @@ public class PromotionController extends HttpServlet {
             p.setValue(new BigDecimal(request.getParameter("value")));
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            p.setStartDate(sdf.parse(request.getParameter("startDate")));
-            p.setEndDate(sdf.parse(request.getParameter("endDate")));
+            p.setStartDate((Date) sdf.parse(request.getParameter("startDate")));
+            p.setEndDate((Date) sdf.parse(request.getParameter("endDate")));
             p.setStatus(request.getParameter("status"));
             p.setApplyCondition(request.getParameter("applyCondition"));
         } catch (Exception e) {

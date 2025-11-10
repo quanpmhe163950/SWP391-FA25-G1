@@ -15,7 +15,7 @@ public class PaymentDAO {
 
     public void insertPayment(String paymentID, int orderID, double amount, String method, String status) throws Exception {
         String sql = "INSERT INTO Payment (PaymentID, OrderID, Amount, Method, Status, TransactionDate) VALUES (?, ?, ?, ?, ?, GETDATE())";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, paymentID);
             ps.setInt(2, orderID);
             ps.setDouble(3, amount);

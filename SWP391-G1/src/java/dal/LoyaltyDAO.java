@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 public class LoyaltyDAO {
 
     public void updatePoints(String customerID, String programID, int pointsToAdd) throws Exception {
-        try (Connection conn = DBConnection.getConnection()) {
+        try (Connection conn = DBContext.getConnection()) {
             String checkSql = "SELECT PointsBalance FROM CustomerLoyalty WHERE CustomerID = ? AND ProgramID = ?";
             try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
                 checkPs.setString(1, customerID);
@@ -45,7 +45,7 @@ public class LoyaltyDAO {
     }
 
     public void updatePointsAndProgram(String customerID, double pointsToAdd) throws Exception {
-        try (Connection conn = DBConnection.getConnection()) {
+        try (Connection conn = DBContext.getConnection()) {
             String checkSql = "SELECT ProgramID, PointsBalance FROM CustomerLoyalty WHERE CustomerID = ?";
             String currentProgramID = null;
             int currentPoints = 0;
