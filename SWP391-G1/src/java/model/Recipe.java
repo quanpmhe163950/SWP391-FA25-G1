@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Recipe {
     private int recipeID;
-    private int itemID;
+    private int itemSizePriceID; // 🔹 Liên kết đến ItemSizePrice (thay vì Item)
     private String description;
     private Date createDate;
 
@@ -15,9 +15,9 @@ public class Recipe {
     public Recipe() {
     }
 
-    public Recipe(int recipeID, int itemID, String description, Date createDate) {
+    public Recipe(int recipeID, int itemSizePriceID, String description, Date createDate) {
         this.recipeID = recipeID;
-        this.itemID = itemID;
+        this.itemSizePriceID = itemSizePriceID;
         this.description = description;
         this.createDate = createDate;
     }
@@ -30,12 +30,12 @@ public class Recipe {
         this.recipeID = recipeID;
     }
 
-    public int getItemID() {
-        return itemID;
+    public int getItemSizePriceID() {
+        return itemSizePriceID;
     }
 
-    public void setItemID(int itemID) {
-        this.itemID = itemID;
+    public void setItemSizePriceID(int itemSizePriceID) {
+        this.itemSizePriceID = itemSizePriceID;
     }
 
     public String getDescription() {

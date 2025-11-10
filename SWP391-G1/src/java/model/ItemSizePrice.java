@@ -10,7 +10,8 @@ public class ItemSizePrice {
     private String size;
     private double price;
     private String status;
-
+    private MenuItem menuItem; // ✅ thêm object MenuItem để mapping, KHÔNG thay đổi DB
+    
     public ItemSizePrice() {
     }
 
@@ -76,4 +77,13 @@ public class ItemSizePrice {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public MenuItem getMenuItem() {
+        return menuItem;
+    }
+
+    public void setMenuItem(MenuItem menuItem) {
+        this.menuItem = menuItem;
+    }
+    
 }

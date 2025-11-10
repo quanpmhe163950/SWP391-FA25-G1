@@ -162,26 +162,17 @@ public class CashPaymentServlet extends HttpServlet {
                     String itemID = String.valueOf(mi.getId());
                     double price = 0;
 
-                    // Lấy giá theo size nếu có phương thức DAO cung cấp
                     try {
-                        if (!size.isEmpty()) {
-                            // đòi hỏi MenuItemDAO có getPriceByItemAndSize(int, String)
-                            price = itemDAO.getPriceByItemAndSize(mi.getId(), size);
-                        } 
-
-                        // fallback: nếu price vẫn 0 thì thử dùng mi.getPrice() nếu tồn tại
-                        if (price <= 0) {
-                            try {
-                                price = mi.getPrice(); // nếu model còn field price
-                            } catch (Exception ignore) {
-                                price = 0;
-                            }
-                        }
-                    } catch (Exception e) {
-                        // không muốn fail toàn bộ đơn vì 1 món
-                        System.err.println("Error getting price for item " + name + " size=" + size + " : " + e.getMessage());
-                        price = 0;
-                    }
+    if (!size.isEmpty()) {
+        price = itemDAO.getPriceByItemAndSize(mi.getId(), size); // lấy giá theo size
+    } else {
+        // Nếu size rỗng, lấy giá mặc định (size Regular) của món
+        price = itemDAO.getPriceByItemAndSize(mi.getId(), size); 
+    }
+} catch (Exception e) {
+    System.err.println("Error getting price for item " + name + " size=" + size + " : " + e.getMessage());
+    price = 0;
+}
 
                     // Insert order item
                     orderItemDAO.insertOrderItem(orderID, itemID, quantity, price);

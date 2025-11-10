@@ -25,6 +25,16 @@ public class MenuItem {
         this.categoryId = categoryId;
     }
 
+    private ItemSizePrice itemSizePrice;
+
+public ItemSizePrice getItemSizePrice() {
+    return itemSizePrice;
+}
+
+public void setItemSizePrice(ItemSizePrice itemSizePrice) {
+    this.itemSizePrice = itemSizePrice;
+}
+
     // Getter – Setter
     public int getId() {
         return id;
