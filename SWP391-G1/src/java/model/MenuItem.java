@@ -1,32 +1,39 @@
 package model;
 
 public class MenuItem {
-    
-    private String id;
+
+    private int id;             // ItemID
     private String name;
+    private String description; // ✅ thiếu trong model
     private double price;
     private String category;
+    private String status;      // ✅ thiếu trong model
     private String imagePath;
+    private int categoryId;     // ✅ thiếu trong model
 
     public MenuItem() {
     }
 
-    public MenuItem(String id, String name, double price, String category, String imagePath) {
+    public MenuItem(int id, String name, String description, double price, 
+                    String category, String status, String imagePath, int categoryId) {
         this.id = id;
         this.name = name;
-        this.price = price;
+        this.description = description;
         this.category = category;
+        this.status = status;
         this.imagePath = imagePath;
+        this.categoryId = categoryId;
     }
 
-    public String getId() {
+    // Getter – Setter
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -35,12 +42,12 @@ public class MenuItem {
         this.name = name;
     }
 
-    public double getPrice() {
-        return price;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getCategory() {
@@ -51,12 +58,28 @@ public class MenuItem {
         this.category = category;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getImagePath() {
         return imagePath;
     }
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
 }

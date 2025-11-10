@@ -42,10 +42,12 @@ public class RecipeController extends HttpServlet {
     // 🧾 Danh sách món ăn
     private void listMenuItems(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<MenuItem> items = recipeDAO.getAllMenuItems();
+        // ✅ sửa MenuItem thành Item
+        List<MenuItem> items = recipeDAO.getAllItems(); 
         List<Integer> itemsWithRecipe = recipeDAO.getItemsWithRecipeID();
         List<Ingredient> allIngredients = ingredientDAO.getAll();
 
+        // ✅ sửa "menuItems" -> "items" nếu JSP dùng Item
         request.setAttribute("menuItems", items);
         request.setAttribute("itemsWithRecipe", itemsWithRecipe);
         request.setAttribute("ingredients", allIngredients);
@@ -56,7 +58,8 @@ public class RecipeController extends HttpServlet {
     private void searchMenuItem(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String keyword = request.getParameter("keyword");
-        List<MenuItem> items = recipeDAO.searchMenuItemByName(keyword);
+        // ✅ sửa tên hàm DAO
+        List<MenuItem> items = recipeDAO.searchItemByName(keyword);
         List<Integer> itemsWithRecipe = recipeDAO.getItemsWithRecipeID();
         List<Ingredient> allIngredients = ingredientDAO.getAll();
 
@@ -240,26 +243,23 @@ public class RecipeController extends HttpServlet {
         int recipeId = Integer.parseInt(request.getParameter("recipeId"));
         String description = request.getParameter("description");
 
-        // --- 1️⃣ Nguyên liệu hiện có (đã tồn tại trong DB)
-        // --- 1️⃣ Lấy danh sách chi tiết hiện có (đã có trong DB) ---
-String[] detailIds = request.getParameterValues("detailId"); // hidden input chứa RecipeDetailID
-String[] updatedQuantities = request.getParameterValues("updatedQuantity"); // ✅ KHỚP VỚI PAYLOAD
-List<RecipeDetail> updatedDetails = new ArrayList<>();
+        String[] detailIds = request.getParameterValues("detailId");
+        String[] updatedQuantities = request.getParameterValues("updatedQuantity");
+        List<RecipeDetail> updatedDetails = new ArrayList<>();
 
-if (detailIds != null && updatedQuantities != null) {
-    for (int i = 0; i < detailIds.length; i++) {
-        try {
-            int id = Integer.parseInt(detailIds[i]);
-            double q = Double.parseDouble(updatedQuantities[i]);
-            RecipeDetail d = new RecipeDetail();
-            d.setRecipeDetailID(id);
-            d.setQuantity(q);
-            updatedDetails.add(d);
-        } catch (Exception ignore) {}
-    }
-}
+        if (detailIds != null && updatedQuantities != null) {
+            for (int i = 0; i < detailIds.length; i++) {
+                try {
+                    int id = Integer.parseInt(detailIds[i]);
+                    double q = Double.parseDouble(updatedQuantities[i]);
+                    RecipeDetail d = new RecipeDetail();
+                    d.setRecipeDetailID(id);
+                    d.setQuantity(q);
+                    updatedDetails.add(d);
+                } catch (Exception ignore) {}
+            }
+        }
 
-        // --- 2️⃣ Nguyên liệu mới thêm
         String[] newIngredientIds = request.getParameterValues("newIngredientId");
         String[] newQuantities = request.getParameterValues("newQuantity");
         List<RecipeDetail> newDetails = new ArrayList<>();
@@ -277,7 +277,6 @@ if (detailIds != null && updatedQuantities != null) {
             }
         }
 
-        // --- 3️⃣ Nguyên liệu bị xóa
         String[] deletedIds = request.getParameterValues("deletedDetailId");
         List<Integer> deletedDetailIds = new ArrayList<>();
 
@@ -289,7 +288,6 @@ if (detailIds != null && updatedQuantities != null) {
             }
         }
 
-        // --- 4️⃣ Gọi DAO
         recipeDAO.updateRecipe(recipeId, description, updatedDetails, newDetails, deletedDetailIds);
         response.sendRedirect("recipe?action=list&success=update");
 
@@ -299,7 +297,6 @@ if (detailIds != null && updatedQuantities != null) {
     }
 }
 
-    // 🧩 Lấy danh sách nguyên liệu chưa có trong công thức
     private void getAvailableIngredients(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.setContentType("application/json;charset=UTF-8");
@@ -327,7 +324,6 @@ if (detailIds != null && updatedQuantities != null) {
         }
     }
 
-    // 🔐 Escape JSON
     private String escapeJson(String text) {
         if (text == null) return "";
         StringBuilder sb = new StringBuilder();

@@ -151,13 +151,6 @@
         <!-- ✅ Navbar -->
         <div class="navbar">
             <h1>Danh sách đơn đặt hàng</h1>
-
-            <div class="user-info">
-                <span class="username">Welcome, Admin</span>
-                <form action="logout" method="post" style="margin:0;">
-                    <button type="submit">Logout</button>
-                </form>
-            </div>
         </div>
 
         <!-- ✅ MAIN CONTENT -->

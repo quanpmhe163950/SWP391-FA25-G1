@@ -15,7 +15,7 @@ public class OrderItemDAO {
 
     public void insertOrderItem(int orderID, String itemID, int quantity, double price) throws Exception {
         String sql = "INSERT INTO OrderItem (OrderID, ItemID, Quantity, Price) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, orderID);
             ps.setString(2, itemID);
             ps.setInt(3, quantity);

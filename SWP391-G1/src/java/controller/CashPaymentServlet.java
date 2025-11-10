@@ -10,14 +10,12 @@ import dal.UsersDAO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.PrintWriter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import model.MenuItem;
@@ -69,11 +67,16 @@ public class CashPaymentServlet extends HttpServlet {
             if (totalObj instanceof Double) {
                 totalAmount = (Double) totalObj;
             } else if (totalObj instanceof String) {
-                totalAmount = Double.parseDouble((String) totalObj);
+                try {
+                    totalAmount = Double.parseDouble((String) totalObj);
+                } catch (Exception ignore) {
+                    totalAmount = 0;
+                }
             }
 
             try {
-                totalAmount = Double.parseDouble(request.getParameter("total"));
+                String totalParam = request.getParameter("total");
+                if (totalParam != null) totalAmount = Double.parseDouble(totalParam);
             } catch (Exception ignore) {}
 
             session.setAttribute("totalAmount", totalAmount);
@@ -96,7 +99,13 @@ public class CashPaymentServlet extends HttpServlet {
             String promoCode = (String) session.getAttribute("pendingPromotionCode");
             if (promoCode == null) promoCode = (String) session.getAttribute("appliedCode");
 
-            double totalAmount = session.getAttribute("totalAmount") != null ? (double) session.getAttribute("totalAmount") : 0;
+            double totalAmount = 0;
+            Object totalObj = session.getAttribute("totalAmount");
+            if (totalObj instanceof Double) totalAmount = (Double) totalObj;
+            else if (totalObj instanceof String) {
+                try { totalAmount = Double.parseDouble((String) totalObj); } catch (Exception ignored) {}
+            }
+
             String cartJson = (String) session.getAttribute("cartData");
 
             List<JSONObject> cartItems = new ArrayList<>();
@@ -127,15 +136,22 @@ public class CashPaymentServlet extends HttpServlet {
 
                 // 1. Lấy PromoID nếu có promoCode
                 model.Promotion promo = promoCode != null ? promoDAO.getPromotionByCode(promoCode) : null;
-                String promoID = promo != null ? promo.getPromoID() : null;
+                String promoID = promo != null ? String.valueOf(promo.getPromoId()) : null;
 
                 // 2. Insert Order
                 int orderID = orderDAO.insertOrder(orderCode, customerID, waiterID, "Completed", promoID);
 
-                // 3. Insert OrderItems từ cart (lấy giá và ItemID từ DB, quantity từ cart)
+                // 3. Insert OrderItems từ cart (lấy giá theo size nếu có)
+                double recomputedTotal = 0; // (optional) để kiểm tra khớp với client
                 for (JSONObject cartItem : cartItems) {
-                    String name = cartItem.getString("name").trim();
-                    int quantity = cartItem.getInt("quantity");
+                    String name = cartItem.optString("name", "").trim();
+                    int quantity = cartItem.optInt("quantity", 0);
+                    String size = cartItem.optString("size", "").trim(); // có thể rỗng
+
+                    if (name.isEmpty() || quantity <= 0) {
+                        System.out.println("Warning: invalid cart item, skipping. name=" + name + " qty=" + quantity);
+                        continue;
+                    }
 
                     MenuItem mi = itemDAO.getItemByName(name);
                     if (mi == null) {
@@ -143,11 +159,35 @@ public class CashPaymentServlet extends HttpServlet {
                         continue;
                     }
 
-                    String itemID = mi.getId();
-                    double price = mi.getPrice();
+                    String itemID = String.valueOf(mi.getId());
+                    double price = 0;
 
+                    // Lấy giá theo size nếu có phương thức DAO cung cấp
+                    try {
+                        if (!size.isEmpty()) {
+                            // đòi hỏi MenuItemDAO có getPriceByItemAndSize(int, String)
+                            price = itemDAO.getPriceByItemAndSize(mi.getId(), size);
+                        } 
+
+                        // fallback: nếu price vẫn 0 thì thử dùng mi.getPrice() nếu tồn tại
+                        if (price <= 0) {
+                            try {
+                                price = mi.getPrice(); // nếu model còn field price
+                            } catch (Exception ignore) {
+                                price = 0;
+                            }
+                        }
+                    } catch (Exception e) {
+                        // không muốn fail toàn bộ đơn vì 1 món
+                        System.err.println("Error getting price for item " + name + " size=" + size + " : " + e.getMessage());
+                        price = 0;
+                    }
+
+                    // Insert order item
                     orderItemDAO.insertOrderItem(orderID, itemID, quantity, price);
-                    System.out.println("Inserted OrderItem: " + " | ItemID: " + itemID + " | Quantity: " + quantity + " | Price: " + price);
+
+                    recomputedTotal += price * quantity;
+                    System.out.println("Inserted OrderItem: ItemID=" + itemID + " | Size=" + size + " | Quantity=" + quantity + " | Price=" + price);
                 }
 
                 // 4. Insert Payment
@@ -159,11 +199,29 @@ public class CashPaymentServlet extends HttpServlet {
                     promoDAO.markPromotionUsedIfAbsent(orderCode, promoCode, customerID);
                 }
 
-                // 6. Tính PPoint và lưu
+                // 6. Tính PPoint và lưu (dùng giá thực tế lấy từ DB theo size)
                 double totalPPoint = 0;
                 for (JSONObject item : cartItems) {
-                    int qty = item.getInt("quantity");
-                    totalPPoint += qty * itemDAO.getItemByName(item.getString("name")).getPrice() * 0.005;
+                    String name = item.optString("name", "").trim();
+                    int qty = item.optInt("quantity", 0);
+                    String size = item.optString("size", "").trim();
+
+                    if (name.isEmpty() || qty <= 0) continue;
+
+                    MenuItem mi = itemDAO.getItemByName(name);
+                    if (mi == null) continue;
+
+                    double price = 0;
+                    try {
+                        if (!size.isEmpty()) {
+                            price = itemDAO.getPriceByItemAndSize(mi.getId(), size);
+                        }
+
+                    } catch (Exception e) {
+                        price = 0;
+                    }
+
+                    totalPPoint += qty * price * 0.005;
                 }
                 if (customerID != null) {
                     loyaltyDAO.updatePointsAndProgram(customerID, totalPPoint);
