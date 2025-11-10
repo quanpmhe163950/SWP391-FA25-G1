@@ -4,53 +4,46 @@
  */
 package dal;
 
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import model.Promotion;
-import java.sql.*;
 
-/**
- *
- * @author ASUS
- */
-public class PromotionDAO extends DBContext {
+public class PromotionDAO {
 
-    public Promotion getPromotionById(int promoId) throws SQLException {
-        String sql = "SELECT PromoID, Code, Description, DiscountType, Value, StartDate, EndDate, Status, ApplyCondition "
-                + "FROM Promotion WHERE PromoID = ?";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, promoId);
+    public Promotion getPromotionByCode(String code) {
+        Promotion promo = null;
+        String sql = "SELECT * FROM Promotion WHERE Code = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, code);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Promotion promotion = new Promotion();
-                    promotion.setPromoId(rs.getInt("PromoID"));
-                    promotion.setCode(rs.getString("Code"));
-                    promotion.setDescription(rs.getString("Description"));
-                    promotion.setDiscountType(rs.getString("DiscountType"));
-                    promotion.setValue(rs.getBigDecimal("Value"));
-                    promotion.setStartDate(rs.getDate("StartDate"));
-                    promotion.setEndDate(rs.getDate("EndDate"));
-                    promotion.setStatus(rs.getString("Status"));
-                    promotion.setApplyCondition(rs.getString("ApplyCondition"));
-                    return promotion;
+                    promo = new Promotion();
+                    promo.setPromoID(rs.getString("PromoID"));
+                    promo.setCode(rs.getString("Code"));
+                    promo.setDescription(rs.getString("Description"));
+                    promo.setDiscountType(rs.getString("DiscountType"));
+                    promo.setValue(rs.getBigDecimal("Value"));
+                    promo.setStartDate(rs.getDate("StartDate"));
+                    promo.setEndDate(rs.getDate("EndDate"));
+                    promo.setStatus(rs.getString("Status"));
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return promo;
     }
 
-    public List<Promotion> getAllPromotions() throws SQLException {
+    public List<Promotion> getActivePromotions() {
         List<Promotion> list = new ArrayList<>();
-        String sql = "SELECT PromoID, Code, Description, DiscountType, Value, StartDate, EndDate, Status,ApplyCondition  "
-                + "FROM Promotion ORDER BY StartDate DESC";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
+        String sql = "SELECT * FROM Promotion WHERE Status = 'Active' "
+                + "AND (StartDate IS NULL OR StartDate <= GETDATE()) "
+                + "AND (EndDate IS NULL OR EndDate >= GETDATE())";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Promotion p = new Promotion();
-                p.setPromoId(rs.getInt("PromoID"));
+                p.setPromoID(rs.getString("PromoID"));
                 p.setCode(rs.getString("Code"));
                 p.setDescription(rs.getString("Description"));
                 p.setDiscountType(rs.getString("DiscountType"));
@@ -58,55 +51,126 @@ public class PromotionDAO extends DBContext {
                 p.setStartDate(rs.getDate("StartDate"));
                 p.setEndDate(rs.getDate("EndDate"));
                 p.setStatus(rs.getString("Status"));
-                p.setApplyCondition(rs.getString("ApplyCondition"));
                 list.add(p);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return list;
     }
 
-    public boolean addPromotion(Promotion p) throws SQLException {
-        String sql = "INSERT INTO Promotion (Code, Description, DiscountType, Value, StartDate, EndDate, Status, ApplyCondition) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public List<Promotion> getActivePromotionsPaging(int page, int pageSize) {
+        List<Promotion> list = new ArrayList<>();
+        String sql = """
+        SELECT * FROM (
+            SELECT ROW_NUMBER() OVER (ORDER BY StartDate DESC) AS rn, *
+            FROM Promotion
+            WHERE Status = 'Active'
+              AND (StartDate IS NULL OR StartDate <= GETDATE())
+              AND (EndDate IS NULL OR EndDate >= GETDATE())
+        ) AS temp
+        WHERE rn BETWEEN ? AND ?
+    """;
+        int start = (page - 1) * pageSize + 1;
+        int end = page * pageSize;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, start);
+            ps.setInt(2, end);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Promotion p = new Promotion();
+                    p.setPromoID(rs.getString("PromoID"));
+                    p.setCode(rs.getString("Code"));
+                    p.setDescription(rs.getString("Description"));
+                    p.setDiscountType(rs.getString("DiscountType"));
+                    p.setValue(rs.getBigDecimal("Value"));
+                    p.setStartDate(rs.getDate("StartDate"));
+                    p.setEndDate(rs.getDate("EndDate"));
+                    p.setStatus(rs.getString("Status"));
+                    list.add(p);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, p.getCode());
-            ps.setString(2, p.getDescription());
-            ps.setString(3, p.getDiscountType());
-            ps.setBigDecimal(4, p.getValue());
-            ps.setDate(5, new java.sql.Date(p.getStartDate().getTime()));
-            ps.setDate(6, new java.sql.Date(p.getEndDate().getTime()));
-            ps.setString(7, p.getStatus());
-            ps.setString(8, p.getApplyCondition());
-            return ps.executeUpdate() > 0;
+    public int getTotalActivePromotions() {
+        String sql = """
+        SELECT COUNT(*)
+        FROM Promotion
+        WHERE Status = 'Active'
+          AND (StartDate IS NULL OR StartDate <= GETDATE())
+          AND (EndDate IS NULL OR EndDate >= GETDATE())
+    """;
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Kiểm tra xem mã khuyến mãi này đã được dùng cho đơn hàng chưa
+    public boolean hasUsedPromotion(String orderCode, String promoCode) {
+        String sql = "SELECT COUNT(*) FROM PromotionUsage WHERE OrderCode = ? AND PromotionCode = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderCode);
+            ps.setString(2, promoCode);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+// Ghi nhận việc đã sử dụng mã khuyến mãi
+
+    public void markPromotionUsed(String orderCode, String promoCode) {
+        String sql = "INSERT INTO PromotionUsage (OrderCode, PromotionCode) VALUES (?, ?)";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderCode);
+            ps.setString(2, promoCode);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public boolean updatePromotion(Promotion p) throws SQLException {
-        String sql = "UPDATE Promotion SET Code=?, Description=?, DiscountType=?, Value=?, StartDate=?, EndDate=?, Status=?, ApplyCondition=? "
-                + "WHERE PromoID=?";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, p.getCode());
-            ps.setString(2, p.getDescription());
-            ps.setString(3, p.getDiscountType());
-            ps.setBigDecimal(4, p.getValue());
-            ps.setDate(5, new java.sql.Date(p.getStartDate().getTime()));
-            ps.setDate(6, new java.sql.Date(p.getEndDate().getTime()));
-            ps.setString(7, p.getStatus());
-            ps.setString(8, p.getApplyCondition());
-            ps.setInt(9, p.getPromoId());
-
-            return ps.executeUpdate() > 0;
+    public void markPromotionUsedIfAbsent(String orderCode, String promoCode) {
+        String sql = "INSERT INTO PromotionUsage (OrderCode, PromotionCode, UsedAt) VALUES (?, ?, GETDATE())";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderCode);
+            ps.setString(2, promoCode);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            // SQL Server: 2627 (vi phạm UNIQUE/PK), 2601 (trùng unique index)
+            if (e.getErrorCode() == 2627 || e.getErrorCode() == 2601) {
+                // đã tồn tại -> coi như OK (idempotent)
+                return;
+            }
+            throw new RuntimeException(e);
         }
     }
 
-    public boolean deletePromotion(int promoId) throws SQLException {
-        String sql = "DELETE FROM Promotion WHERE PromoID = ?";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, promoId);
-            return ps.executeUpdate() > 0;
+    public void markPromotionUsedIfAbsent(String orderCode, String promoCode, String customerID) {
+        String sql = "INSERT INTO PromotionUsage (OrderCode, PromotionCode, CustomerID, UsedAt) VALUES (?, ?, ?, GETDATE())";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderCode);
+            ps.setString(2, promoCode);
+            ps.setString(3, customerID); // null nếu guest
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 2627 || e.getErrorCode() == 2601) {
+                return;
+            }
+            throw new RuntimeException(e);
         }
     }
 }

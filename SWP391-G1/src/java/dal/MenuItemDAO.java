@@ -1,70 +1,44 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dal;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-import model.MenuItem;
 import java.sql.*;
+import java.util.*;
+import model.MenuItem;
 
-/**
- *
- * @author ASUS
- */
-public class MenuItemDAO extends DBContext {
+public class MenuItemDAO {
 
-    public List<MenuItem> getAllMenuItems() {
-        List<MenuItem> list = new ArrayList<>();
-        String sql = "SELECT ItemID, Name, Description, Price, Category, Status, ImagePath, CategoryID FROM MenuItem";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
+    public Map<String, List<MenuItem>> getAvailableItemsByCategory() {
+        Map<String, List<MenuItem>> categoryMap = new LinkedHashMap<>();
+        String sql = "SELECT Name, Price, Category, ImagePath FROM MenuItem WHERE Status = 'Available' ORDER BY Category";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                MenuItem item = new MenuItem(
-                        rs.getInt("ItemID"),
-                        rs.getString("Name"),
-                        rs.getString("Description"),
-                        rs.getDouble("Price"),
-                        rs.getString("Category"),
-                        rs.getString("Status"),
-                        rs.getString("ImagePath"),
-                        rs.getInt("CategoryID")
-                );
-                list.add(item);
+                String category = rs.getString("Category");
+                MenuItem item = new MenuItem();
+                item.setName(rs.getString("Name"));
+                item.setPrice(rs.getDouble("Price"));
+                item.setCategory(category);
+                item.setImagePath(rs.getString("ImagePath")); // ✅ Lấy đường dẫn ảnh
+                categoryMap.computeIfAbsent(category, k -> new ArrayList<>()).add(item);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("=== [DAO] Lỗi lấy MenuItem: " + e.getMessage());
-            return new ArrayList<>(); // TRẢ RỖNG, KHÔNG NULL
         }
-        return list;
-    }
-    // CẬP NHẬT MÓN ĂN
-
-    public boolean updateMenuItem(MenuItem item) throws SQLException {
-        String sql = "UPDATE MenuItem SET Name=?, Description=?, Price=?, Category=?, Status=?, ImagePath=?, CategoryID=? WHERE ItemID=?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, item.getName());
-            ps.setString(2, item.getDescription());
-            ps.setDouble(3, item.getPrice());
-            ps.setString(4, item.getCategory());
-            ps.setString(5, item.getStatus());
-            ps.setString(6, item.getImagePath());
-            ps.setInt(7, item.getCategoryID());
-            ps.setInt(8, item.getItemID());
-            return ps.executeUpdate() > 0;
-        }
+        return categoryMap;
     }
 
-// XÓA MÓN ĂN
-    public boolean deleteMenuItem(int itemID) throws SQLException {
-        String sql = "DELETE FROM MenuItem WHERE ItemID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, itemID);
-            return ps.executeUpdate() > 0;
+    public MenuItem getItemByName(String name) throws Exception {
+        String sql = "SELECT ItemID, Name, Price FROM MenuItem WHERE Name = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    MenuItem item = new MenuItem();
+                    item.setId(rs.getString("ItemID"));
+                    item.setName(rs.getString("Name"));
+                    item.setPrice(rs.getDouble("Price"));
+                    return item;
+                }
+            }
         }
+        return null;
     }
 }
