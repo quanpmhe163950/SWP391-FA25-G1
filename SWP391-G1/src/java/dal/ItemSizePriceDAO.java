@@ -7,7 +7,11 @@ package dal;
 import model.ItemSizePrice;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import model.MenuItem;
 
 public class ItemSizePriceDAO extends DBContext {
 
@@ -144,4 +148,51 @@ public class ItemSizePriceDAO extends DBContext {
         }
         return false;
     }
+
+    
+    // Lấy danh sách size + giá cho từng món
+    public Map<MenuItem, List<ItemSizePrice>> getMenuWithSizes() {
+        Map<MenuItem, List<ItemSizePrice>> result = new LinkedHashMap<>();
+        String sql = """
+            SELECT m.ItemID, m.Name, m.Description, m.ImagePath,
+                               isp.Size, isp.Price
+                        FROM MenuItem m
+                        JOIN ItemSizePrice isp ON m.ItemID = isp.ItemID
+                        WHERE m.Status = 'Available'
+                        ORDER BY m.ItemID, isp.Size
+        """;
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            Map<Integer, MenuItem> itemMap = new HashMap<>();
+
+            while (rs.next()) {
+                int itemId = rs.getInt("ItemID");
+                MenuItem item = itemMap.get(itemId);
+                if (item == null) {
+                    item = new MenuItem();
+                    item.setId(itemId);
+                    item.setName(rs.getString("Name"));
+                    item.setDescription(rs.getString("Description"));
+                    item.setImagePath(rs.getString("ImagePath"));
+                    itemMap.put(itemId, item);
+                    result.put(item, new ArrayList<>());
+                }
+                ItemSizePrice isp = new ItemSizePrice();
+                isp.setItemID(itemId);
+                isp.setSize(rs.getString("Size"));
+                isp.setPrice(rs.getDouble("Price"));
+
+                result.get(item).add(isp);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
 }

@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, model.MenuItem, model.Promotion" %>
+<%@ page import="java.util.*, model.MenuItem, model.ItemSizePrice" %>
+
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setHeader("Pragma", "no-cache");
@@ -398,34 +400,35 @@
                     <h2>Menu</h2>
                 </div>
                 <hr>
+                <%
+Map<MenuItem, List<ItemSizePrice>> menuWithSizes = 
+    (Map<MenuItem, List<ItemSizePrice>>) request.getAttribute("menuWithSizes");
+%>
+
                 <div class="menu-grid">
-                    <%
-                        Map<String, List<MenuItem>> menuByCategory = (Map<String, List<MenuItem>>) request.getAttribute("menuByCategory");
-                        if (menuByCategory != null && !menuByCategory.isEmpty()) {
-                            for (String category : menuByCategory.keySet()) {
-                                for (MenuItem item : menuByCategory.get(category)) {
-                    %>
-                    <div class="menu-item" data-category="<%= category %>">
-                        <img src="<%= item.getImagePath() != null && !item.getImagePath().isEmpty()
-                                    ? item.getImagePath()
-                                    : "https://cdn-icons-png.flaticon.com/512/3132/3132693.png" %>"
-                             alt="<%= item.getName() %>">
-                        <p><b><%= item.getName() %></b></p>
-                        <p><%= String.format("%.0f", item.getPrice()) %> VNĐ</p>
-                        <div class="quantity-control" data-name="<%= item.getName() %>" data-price="<%= item.getPrice() %>">
-                            <button class="minus-btn">−</button>
-                            <input type="number" min="0" value="0" class="qty-input">
-                            <button class="plus-btn">+</button>
-                        </div>
-                    </div>
-                    <%
-                                }
-                            }
-                        } else {
-                    %>
-                    <p>Không có món ăn khả dụng.</p>
-                    <% } %>
-                </div>
+<% if (menuWithSizes != null && !menuWithSizes.isEmpty()) {
+       for (MenuItem item : menuWithSizes.keySet()) {
+           List<ItemSizePrice> sizes = menuWithSizes.get(item);
+           for (ItemSizePrice isp : sizes) {
+%>
+    <div class="menu-item" data-category="<%= item.getCategory() %>">
+        <img src="<%= item.getImagePath() != null && !item.getImagePath().isEmpty() 
+                    ? item.getImagePath() 
+                    : "https://cdn-icons-png.flaticon.com/512/3132/3132693.png" %>" 
+             alt="<%= item.getName() %>">
+        <p><b><%= item.getName() %></b> - <%= isp.getSize() %></p>
+        <p><%= String.format("%.0f", isp.getPrice()) %> VNĐ</p>
+        <div class="quantity-control" data-name="<%= item.getName() %>" data-size="<%= isp.getSize() %>" data-price="<%= isp.getPrice() %>">
+            <button class="minus-btn">−</button>
+            <input type="number" min="0" value="0" class="qty-input">
+            <button class="plus-btn">+</button>
+        </div>
+    </div>
+<%     }
+       }
+   } %>
+</div>
+
             </div>
             <div class="sidebar">
                 <div class="cart">

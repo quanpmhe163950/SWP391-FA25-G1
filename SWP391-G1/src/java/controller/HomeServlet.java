@@ -1,6 +1,6 @@
 package controller;
 
-import dal.MenuItemDAO;
+import dal.ItemSizePriceDAO;
 import dal.PromotionDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.util.*;
 import model.MenuItem;
+import model.ItemSizePrice;
 import model.Promotion;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -29,6 +30,7 @@ public class HomeServlet extends HttpServlet {
             response.sendRedirect("HomePage");
             return;
         }
+
         HttpSession session;
         boolean fromPayment = "true".equals(request.getParameter("fromPayment"));
         if (fromPayment) {
@@ -40,6 +42,7 @@ public class HomeServlet extends HttpServlet {
         } else {
             session = request.getSession(true);
         }
+
         // ✅ Nếu người dùng bấm "Hủy mã giảm giá"
         if ("true".equals(request.getParameter("resetVoucher"))) {
             session.removeAttribute("discountType");
@@ -47,14 +50,17 @@ public class HomeServlet extends HttpServlet {
             session.removeAttribute("appliedCode");
             session.removeAttribute("voucherMessage");
             session.removeAttribute("voucherColor");
-            session.removeAttribute("pendingPromotionCode"); // nếu có mã đang chờ
+            session.removeAttribute("pendingPromotionCode");
             response.sendRedirect("HomePage");
             return;
         }
-        // --- Lấy dữ liệu menu & voucher như cũ ---
-        MenuItemDAO dao = new MenuItemDAO();
-        Map<String, List<MenuItem>> menuByCategory = dao.getAvailableItemsByCategory();
-        request.setAttribute("menuByCategory", menuByCategory);
+
+        // --- Lấy dữ liệu menu theo món + size + giá ---
+        ItemSizePriceDAO dao = new ItemSizePriceDAO();
+        Map<MenuItem, List<ItemSizePrice>> menuWithSizes = dao.getMenuWithSizes();
+        request.setAttribute("menuWithSizes", menuWithSizes);
+
+        // --- Phần khuyến mãi ---
         int page = 1, pageSize = 5;
         String pageParam = request.getParameter("page");
         if (pageParam != null) {
@@ -71,12 +77,14 @@ public class HomeServlet extends HttpServlet {
         request.setAttribute("activePromotions", activePromotions);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+
         // 🔹 Mã đơn hàng nếu chưa có
         if (session.getAttribute("orderCode") == null) {
             session.setAttribute("orderCode", generateOrderCode());
         }
+
         boolean fromVoucher = "true".equals(request.getParameter("fromVoucher"));
-        // ✅ Luôn set discount từ session nếu có, không chỉ khi fromVoucher
+        // ✅ Luôn set discount từ session nếu có
         if (session.getAttribute("discountType") != null && session.getAttribute("discountValue") != null) {
             request.setAttribute("discountType", session.getAttribute("discountType"));
             request.setAttribute("discountValue", session.getAttribute("discountValue"));
@@ -85,16 +93,17 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("voucherMessage", session.getAttribute("voucherMessage"));
             request.setAttribute("voucherColor", session.getAttribute("voucherColor"));
         } else if (!fromVoucher && !fromPayment) {
-            // 🔹 Reset thông báo khi load trang mới hoặc F5, nhưng không reset khi fromVoucher hoặc fromPayment
             session.removeAttribute("voucherMessage");
             session.removeAttribute("voucherColor");
         }
+
         // ✅ Giữ lại giỏ hàng khi quay lại
         Object cartData = session.getAttribute("cartData");
         if (cartData != null) {
             request.setAttribute("cartData", cartData);
         }
-        request.getRequestDispatcher("HomePage.jsp").forward(request, response);
+
+        request.getRequestDispatcher("MenuPage.jsp").forward(request, response);
     }
 
     @Override
