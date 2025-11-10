@@ -4,57 +4,31 @@
  */
 package model;
 
+/**
+ *
+ * @author dotha
+ */
 import java.math.BigDecimal;
-import java.util.Date;
-
-import java.util.Date;
-
+import java.sql.Date;
 
 public class Promotion {
 
-    private int promoId;
+    private String promoID;
     private String code;
     private String description;
-    private String discountType; // "PERCENT" hoặc "FIXED"
-   private BigDecimal value;
+    private String discountType;
+    private BigDecimal value;
     private Date startDate;
     private Date endDate;
     private String status;
-    private String applyCondition;// "ACTIVE", "INACTIVE", "EXPIRED"
 
-    // Constructors
-
-    public Promotion() {
+    // Getters & Setters
+    public String getPromoID() {
+        return promoID;
     }
 
-    public Promotion(int promoId, String code, String description, String discountType, BigDecimal value, Date startDate, Date endDate, String status, String applyCondition) {
-        this.promoId = promoId;
-        this.code = code;
-        this.description = description;
-        this.discountType = discountType;
-        this.value = value;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.status = status;
-        this.applyCondition = applyCondition;
-    }
-
-    public String getApplyCondition() {
-        return applyCondition;
-    }
-
-    public void setApplyCondition(String applyCondition) {
-        this.applyCondition = applyCondition;
-    }
-    
-
-    // Getters and Setters
-    public int getPromoId() {
-        return promoId;
-    }
-
-    public void setPromoId(int promoId) {
-        this.promoId = promoId;
+    public void setPromoID(String promoID) {
+        this.promoID = promoID;
     }
 
     public String getCode() {
