@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, model.MenuItem, model.Promotion" %>
 <%@ page import="java.util.*, model.MenuItem, model.ItemSizePrice" %>
+<%@ page import="java.util.*, model.Category" %>
+
 
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -387,19 +389,30 @@
                 %>
             </div>
         </header>
-        <main>
-            <div class="menu-container">
-                <div class="menu-header">
-                    <select id="categoryFilter" onchange="filterMenuByCategory()">
-                        <option value="All">Tất cả</option>
-                        <option value="Pizza">Pizza</option>
-                        <option value="Drink">Drink</option>
-                        <option value="Pasta/Salad">Pasta/Salad</option>
-                        <option value="Extras">Extras</option>
-                    </select>
-                    <h2>Menu</h2>
-                </div>
-                <hr>
+        <main style="display: flex; gap: 30px;">
+    <!-- 🔹 Cột trái: danh sách đơn -->
+    <div id="completed-orders" class="orders-container" style="flex: 1; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow-y: auto;">
+    </div>
+
+    <!-- 🔹 Cột phải: menu -->
+    <div class="menu-container" style="flex: 2;">
+        <div class="menu-header">
+            <select id="categoryFilter" onchange="filterMenuByCategory()">
+                <option value="All">Tất cả</option>
+                <%
+                    List<Category> categoryList = (List<Category>) request.getAttribute("categoryList");
+                    if (categoryList != null) {
+                        for (Category c : categoryList) {
+                %>
+                <option value="<%= c.getCategoryName() %>"><%= c.getCategoryName() %></option>
+                <%
+                        }
+                    }
+                %>
+            </select>
+            <h2>Menu</h2>
+        </div>
+        <hr>
                 <%
 Map<MenuItem, List<ItemSizePrice>> menuWithSizes = 
     (Map<MenuItem, List<ItemSizePrice>>) request.getAttribute("menuWithSizes");
@@ -558,136 +571,169 @@ Map<MenuItem, List<ItemSizePrice>> menuWithSizes =
                 </div>
             </div>
         </main>
+                    <script>
+  fetch('<%=request.getContextPath()%>/orders/update-status')
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('completed-orders').innerHTML = html;
+    });
+</script>
+
         <script>
             let cart = [];
-            let selectedMethod = null;
-            let discountValue = <%= request.getAttribute("discountValue") != null ? request.getAttribute("discountValue") : 0 %>;
-            let discountType = "<%= request.getAttribute("discountType") != null ? request.getAttribute("discountType") : "" %>";
-            function syncInputsWithCart() {
-                // Tạo map: name -> quantity
-                const qMap = new Map(cart.map(i => [i.name, i.quantity]));
-                document.querySelectorAll(".quantity-control").forEach(ctrl => {
-                    const input = ctrl.querySelector(".qty-input");
-                    const name = ctrl.dataset.name;
-                    const qty = qMap.get(name) || 0;
-                    // Gán lại value mà KHÔNG gọi updateCartQuantity để tránh ghi chồng
-                    input.value = qty;
-                });
+let selectedMethod = null;
+let discountValue = <%= request.getAttribute("discountValue") != null ? request.getAttribute("discountValue") : 0 %>;
+let discountType = "<%= request.getAttribute("discountType") != null ? request.getAttribute("discountType") : "" %>";
+
+// 🟩 SỬA: Map theo name + size
+function syncInputsWithCart() {
+    const qMap = new Map(cart.map(i => [`${i.name}_${i.size}`, i.quantity]));
+    document.querySelectorAll(".quantity-control").forEach(ctrl => {
+        const input = ctrl.querySelector(".qty-input");
+        const name = ctrl.dataset.name;
+        const size = ctrl.dataset.size;
+        const key = `${name}_${size}`;
+        const qty = qMap.get(key) || 0;
+        input.value = qty;
+    });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const res = await fetch("Cart");
+        const text = await res.text();
+        if (text && text.startsWith("[")) {
+            cart = JSON.parse(text);
+            renderCart();
+            syncInputsWithCart();
+        }
+    } catch (e) {
+        console.error("Không thể tải giỏ hàng:", e);
+    }
+
+    document.querySelectorAll(".quantity-control").forEach(ctrl => {
+        const name = ctrl.dataset.name;
+        const size = ctrl.dataset.size;
+        const price = parseFloat(ctrl.dataset.price);
+        const minusBtn = ctrl.querySelector(".minus-btn");
+        const plusBtn = ctrl.querySelector(".plus-btn");
+        const input = ctrl.querySelector(".qty-input");
+
+        plusBtn.addEventListener("click", () => {
+            let currentVal = parseInt(input.value);
+            if (currentVal >= 100) {
+                alert("Số lượng món ăn không được vượt quá 100 món!");
+                input.value = 100;
+                return;
             }
-            document.addEventListener("DOMContentLoaded", async () => {
-                try {
-                    const res = await fetch("Cart");
-                    const text = await res.text();
-                    if (text && text.startsWith("[")) {
-                        cart = JSON.parse(text);
-                        renderCart();
-                        // ✅ Đổ lại số lượng đã chọn vào các input
-                        syncInputsWithCart();
-                    }
-                } catch (e) {
-                    console.error("Không thể tải giỏ hàng:", e);
-                }
-                // (giữ nguyên đoạn gắn sự kiện + / - và input)
-                document.querySelectorAll(".quantity-control").forEach(ctrl => {
-                    const name = ctrl.dataset.name;
-                    const price = parseFloat(ctrl.dataset.price);
-                    const minusBtn = ctrl.querySelector(".minus-btn");
-                    const plusBtn = ctrl.querySelector(".plus-btn");
-                    const input = ctrl.querySelector(".qty-input");
-                    plusBtn.addEventListener("click", () => {
-                        let currentVal = parseInt(input.value);
-                        if (currentVal >= 100) {
-                            alert("Số lượng món ăn không được vượt quá 100 món!");
-                            input.value = 100;
-                            return;
-                        }
-                        input.value = currentVal + 1;
-                        updateCartQuantity(name, price, parseInt(input.value));
-                    });
-                    minusBtn.addEventListener("click", () => {
-                        let val = parseInt(input.value);
-                        if (val > 0) {
-                            val -= 1;
-                            input.value = val;
-                            updateCartQuantity(name, price, val);
-                        }
-                    });
-                    input.addEventListener("input", () => {
-                        let val = parseInt(input.value);
-                        if (isNaN(val) || val < 0)
-                            val = 0;
-                        if (val > 100) {
-                            alert("Số lượng món ăn không được vượt quá 100 món!");
-                            val = 100;
-                        }
-                        input.value = val;
-                        updateCartQuantity(name, price, val);
-                    });
-                });
-            });
-            // --- GỌI KHI CẬP NHẬT GIỎ HÀNG ---
-            async function saveCartToServer() {
-                try {
-                    await fetch("Cart", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                        body: "cartJson=" + encodeURIComponent(JSON.stringify(cart))
-                    });
-                } catch (e) {
-                    console.error("Lỗi lưu giỏ hàng:", e);
-                }
+            input.value = currentVal + 1;
+            updateCartQuantity(name, size, price, parseInt(input.value));
+        });
+
+        minusBtn.addEventListener("click", () => {
+            let val = parseInt(input.value);
+            if (val > 0) {
+                val -= 1;
+                input.value = val;
+                updateCartQuantity(name, size, price, val);
             }
-            function addToCart(name, price) {
-                let existing = cart.find(item => item.name === name);
-                if (existing)
-                    existing.quantity++;
-                else
-                    cart.push({name, price, quantity: 1});
-                renderCart();
-                saveCartToServer(); // 🔹 Lưu vào session
+        });
+
+        input.addEventListener("input", () => {
+            let val = parseInt(input.value);
+            if (isNaN(val) || val < 0)
+                val = 0;
+            if (val > 100) {
+                alert("Số lượng món ăn không được vượt quá 100 món!");
+                val = 100;
             }
-            function renderCart() {
-                const tbody = document.querySelector("#cartTable tbody");
-                tbody.innerHTML = "";
-                let subtotal = 0;
-                cart.forEach(item => {
-                    subtotal += item.price * item.quantity;
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = "<td>" + item.name + "</td><td>" + item.quantity + "</td><td>" + (item.price * item.quantity).toLocaleString() + " VNĐ</td>";
-                    tbody.appendChild(tr);
-                });
-                let vat = subtotal * 0.1;
-                let discount = 0;
-                if (discountType === "PERCENT") {
-                    discount = subtotal * (discountValue / 100);
-                } else if (discountType === "FIXED") {
-                    discount = discountValue;
-                }
-                let total = subtotal + vat - discount;
-                document.getElementById("subtotal").innerText = subtotal.toLocaleString() + " VNĐ";
-                document.getElementById("vat").innerText = vat.toLocaleString() + " VNĐ";
-                document.getElementById("discount").innerText = discount.toLocaleString() + " VNĐ";
-                document.getElementById("total").innerText = total.toLocaleString() + " VNĐ";
-                // ✅ Tính Tổng PPoint (0.5%)
-                let totalPPoint = 0;
-                cart.forEach(item => {
-                    totalPPoint += item.price * item.quantity * 0.005;
-                });
-                document.getElementById("totalPPoint").innerText = totalPPoint.toFixed(2) + " P";
-            }
-            function updateCartQuantity(name, price, quantity) {
-                let item = cart.find(i => i.name === name);
-                if (quantity === 0) {
-                    // Xóa khỏi giỏ nếu số lượng = 0
-                    cart = cart.filter(i => i.name !== name);
-                } else if (item) {
-                    item.quantity = quantity;
-                } else {
-                    cart.push({name, price, quantity});
-                }
-                renderCart();
-                saveCartToServer(); // 🔹 Lưu mỗi lần cập nhật
-            }
+            input.value = val;
+            updateCartQuantity(name, size, price, val);
+        });
+    });
+});
+
+async function saveCartToServer() {
+    try {
+        await fetch("Cart", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: "cartJson=" + encodeURIComponent(JSON.stringify(cart))
+        });
+    } catch (e) {
+        console.error("Lỗi lưu giỏ hàng:", e);
+    }
+}
+
+// 🟩 SỬA: phân biệt name + size
+function addToCart(name, size, price) {
+    let existing = cart.find(item => item.name === name && item.size === size);
+    if (existing)
+        existing.quantity++;
+    else
+        cart.push({name, size, price, quantity: 1});
+    renderCart();
+    saveCartToServer();
+}
+
+function renderCart() {
+    const tbody = document.querySelector("#cartTable tbody");
+    tbody.innerHTML = "";
+    let subtotal = 0;
+    cart.forEach(item => {
+        subtotal += item.price * item.quantity;
+        const tr = document.createElement("tr");
+        tr.innerHTML =
+            `<td>\${item.name} (\${item.size})</td>
+             <td>\${item.quantity}</td>
+             <td>\${(item.price * item.quantity).toLocaleString()} VNĐ</td>`;
+        tbody.appendChild(tr);
+    });
+
+    let vat = subtotal * 0.1;
+    let discount = 0;
+    if (discountType === "PERCENT") {
+        discount = subtotal * (discountValue / 100);
+    } else if (discountType === "FIXED") {
+        discount = discountValue;
+    }
+    let total = subtotal + vat - discount;
+    document.getElementById("subtotal").innerText = subtotal.toLocaleString() + " VNĐ";
+    document.getElementById("vat").innerText = vat.toLocaleString() + " VNĐ";
+    document.getElementById("discount").innerText = discount.toLocaleString() + " VNĐ";
+    document.getElementById("total").innerText = total.toLocaleString() + " VNĐ";
+
+    let totalPPoint = 0;
+    cart.forEach(item => {
+        totalPPoint += item.price * item.quantity * 0.005;
+    });
+    document.getElementById("totalPPoint").innerText = totalPPoint.toFixed(2) + " P";
+
+    const checkoutBtn = document.querySelector(".checkout-btn");
+    if (total <= 0 || isNaN(total)) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.opacity = "0.6";
+        checkoutBtn.style.cursor = "not-allowed";
+    } else {
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.opacity = "1";
+        checkoutBtn.style.cursor = "pointer";
+    }
+}
+
+// 🟩 SỬA: kiểm tra theo name + size
+function updateCartQuantity(name, size, price, quantity) {
+    let item = cart.find(i => i.name === name && i.size === size);
+    if (quantity === 0) {
+        cart = cart.filter(i => !(i.name === name && i.size === size));
+    } else if (item) {
+        item.quantity = quantity;
+    } else {
+        cart.push({name, size, price, quantity});
+    }
+    renderCart();
+    saveCartToServer();
+}
             function selectPayment(el, method) {
                 document.querySelectorAll('.payment-icons img').forEach(img => img.classList.remove('selected'));
                 el.classList.add('selected');
@@ -800,5 +846,53 @@ Map<MenuItem, List<ItemSizePrice>> menuWithSizes =
                 applyVoucher();
             }
         </script>
+        <script>
+    const contextPath = '<%= request.getContextPath() %>';
+
+    function confirmServed() {
+        const form = document.getElementById("completedForm");
+        
+        const selected = form.querySelectorAll("input[name='selectedOrders']:checked");
+        
+        if (selected.length === 0) {
+            alert("Hãy chọn ít nhất 1 order để xác nhận!");
+            return;
+        }
+
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+  console.log("FormData =>", key, value);
+}
+        fetch(contextPath + "/orders/update-status", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Cập nhật thành công!");
+                refreshCompletedOrders();
+            } else {
+                alert("❌ Cập nhật thất bại!");
+            }
+        })
+        .catch(err => console.error("Error:", err));
+    }
+
+    function refreshCompletedOrders() {
+        fetch(contextPath + "/orders/update-status")
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                const newSection = doc.querySelector("#completedOrdersSection");
+                if (newSection) {
+                    document.getElementById("completedOrdersSection").innerHTML = newSection.innerHTML;
+                }
+            })
+            .catch(err => console.error("Refresh error:", err));
+    }
+</script>
+
     </body>
 </html>

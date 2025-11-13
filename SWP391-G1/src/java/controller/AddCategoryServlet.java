@@ -62,8 +62,8 @@ public class AddCategoryServlet extends HttpServlet {
         try {
             boolean isAdded = categoryDAO.addCategory(categoryName.trim(), description.trim(), status);
             if (isAdded) {
-                request.setAttribute("successMessage", "✅ Category [" + categoryName + "] added successfully!");
-                response.sendRedirect("addCategory?message=success");
+               // ✅ Sau khi thêm thành công → chuyển sang listCategory.jsp
+                response.sendRedirect("listCategory");
             } else {
                 request.setAttribute("errorMessage", "❌ Failed to add category to database.");
                 request.getRequestDispatcher("addCategory.jsp").forward(request, response);

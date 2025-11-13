@@ -149,8 +149,6 @@
                     <td><%= c.getStatus() %></td>
                     <td>
                         <a href="editCategory?categoryID=<%= c.getCategoryID() %>">✏️ Edit</a> |
-                        <a href="deleteCategory?categoryID=<%= c.getCategoryID() %>"
-                           onclick="return confirm('Are you sure to mark this category as unavailable?');">🗑️ Delete</a> |
                         <a href="addItem?categoryID=<%= c.getCategoryID() %>" style="color: green;">➕ Add Product</a>
                     </td>
                 </tr>

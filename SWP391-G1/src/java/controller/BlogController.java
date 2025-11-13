@@ -60,7 +60,7 @@ public class BlogController extends HttpServlet {
                 List<Blog> blogs = dao.getAllBlogs();
                 request.setAttribute("blogList", blogs);
                 request.getSession().setAttribute("blogList", blogs);
-                request.getRequestDispatcher("/HomePage.jsp").forward(request, response);
+                request.getRequestDispatcher("/admin/blog.jsp").forward(request, response);
                 break;
             }
 

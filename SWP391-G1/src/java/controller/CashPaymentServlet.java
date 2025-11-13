@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import model.MenuItem;
+import model.User;
 
 /**
  * Servlet xử lý thanh toán tiền mặt
@@ -119,7 +120,9 @@ public class CashPaymentServlet extends HttpServlet {
             String phone = request.getParameter("phone");
             UsersDAO userDAO = new UsersDAO();
             String customerID = (phone != null && !phone.trim().isEmpty()) ? userDAO.getUserIDByPhone(phone) : null;
-            String waiterID = (String) session.getAttribute("userID");
+            User user = (User) session.getAttribute("account");
+            String waiterID = user != null ? String.valueOf(user.getUserID()) : null;
+
 
             if (cartItems.isEmpty()) {
                 response.sendRedirect("HomePage?error=emptyCart");

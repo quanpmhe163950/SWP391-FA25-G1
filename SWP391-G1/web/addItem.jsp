@@ -140,6 +140,43 @@
         a:hover { text-decoration: underline; }
 
         h2 { margin-top: 0; color: #333; }
+        
+        .size-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.size-row select {
+    flex: 7;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.size-row input[type=number] {
+    flex: 3;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.size-row .btn-remove {
+    background-color: #dc3545;
+    padding: 6px 8px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.size-row .btn-remove:hover {
+    background-color: #c82333;
+}
+
     </style>
 </head>
 
@@ -224,29 +261,48 @@
                 <h3>Size & Price</h3>
                 <div id="sizes-container">
 
-                    <%
-                        String[] sizes = request.getParameterValues("size");
-                        String[] prices = request.getParameterValues("price");
+    <%
+        String[] sizes = request.getParameterValues("size");
+        String[] prices = request.getParameterValues("price");
 
-                        if (sizes != null && prices != null) {
-                            for (int i = 0; i < sizes.length; i++) {
-                    %>
-                        <div class="size-row">
-                            <input type="text" name="size" value="<%= sizes[i] %>" required>
-                            <input type="number" name="price" value="<%= prices[i] %>" step="0.01" required>
-                            <button type="button" class="btn-remove" onclick="removeRow(this)">❌</button>
-                        </div>
-                    <% 
-                            }
-                        } else { 
-                    %>
-                        <div class="size-row">
-                            <input type="text" name="size" placeholder="Size (e.g. Small, Large...)" required>
-                            <input type="number" name="price" placeholder="Price" step="0.01" required>
-                        </div>
-                    <% } %>
+        if (sizes != null && prices != null) {
+            for (int i = 0; i < sizes.length; i++) {
+    %>
+        <div class="size-row">
+            <select name="size" required>
+                <option value="">-- Select Size --</option>
+                <option value="Đại" <%= "Đại".equals(sizes[i]) ? "selected" : "" %>>Đại</option>
+                <option value="Lớn" <%= "Lớn".equals(sizes[i]) ? "selected" : "" %>>Lớn</option>
+                <option value="Vừa" <%= "Vừa".equals(sizes[i]) ? "selected" : "" %>>Vừa</option>
+                <option value="Nhỏ" <%= "Nhỏ".equals(sizes[i]) ? "selected" : "" %>>Nhỏ</option>
+            </select>
 
-                </div>
+            <input type="number" name="price"
+       value="<%= prices[i] != null ? prices[i] : "" %>"
+       step="0.01" placeholder="Price" required>
+
+
+            <button type="button" class="btn-remove" onclick="removeRow(this)">❌</button>
+        </div>
+    <% 
+            }
+        } else { 
+    %>
+        <div class="size-row">
+            <select name="size" required>
+                <option value="">-- Select Size --</option>
+                <option value="Đại">Đại</option>
+                <option value="Lớn">Lớn</option>
+                <option value="Vừa">Vừa</option>
+                <option value="Nhỏ">Nhỏ</option>
+            </select>
+
+            <input type="number" name="price"
+                   placeholder="Price" step="0.01" required>
+        </div>
+    <% } %>
+
+</div>
 
                 <button type="button" class="btn-add" onclick="addSizeRow()">+ Add another size</button>
                 <span class="error"><%= (errors != null && errors.get("sizeError") != null) ? errors.get("sizeError") : "" %></span>
@@ -278,17 +334,24 @@
 </div>
 
 <script>
-    function addSizeRow() {
-        const container = document.getElementById('sizes-container');
-        const div = document.createElement('div');
-        div.className = 'size-row';
-        div.innerHTML = `
-            <input type="text" name="size" placeholder="Size..." required>
-            <input type="number" name="price" placeholder="Price" step="0.01" required>
-            <button type="button" class="btn-remove" onclick="removeRow(this)">❌</button>
-        `;
-        container.appendChild(div);
-    }
+   function addSizeRow() {
+    const container = document.getElementById('sizes-container');
+    const div = document.createElement('div');
+    div.className = 'size-row';
+    div.innerHTML = `
+        <select name="size" required>
+            <option value="">-- Select Size --</option>
+            <option value="Đại">Đại</option>
+            <option value="Lớn">Lớn</option>
+            <option value="Vừa">Vừa</option>
+            <option value="Nhỏ">Nhỏ</option>
+        </select>
+
+        <input type="number" name="price" placeholder="Price" step="0.01" required>
+        <button type="button" class="btn-remove" onclick="removeRow(this)">❌</button>
+    `;
+    container.appendChild(div);
+}
 
     function removeRow(button) {
         button.parentElement.remove();

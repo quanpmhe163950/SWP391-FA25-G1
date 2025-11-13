@@ -4,10 +4,15 @@
  */
 package dal;
 
+import java.sql.SQLException;
+import static dal.DBContext.connection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import model.Order;
 
 /**
  *
@@ -35,4 +40,43 @@ public class OrderDAO {
             }
         }
     }
+    public List<Order> getOrdersByStatus(String status) {
+    List<Order> list = new ArrayList<>();
+    String sql = "SELECT * FROM [Order] WHERE Status = ?";
+
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, status);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Order o = new Order();
+            o.setOrderID(rs.getInt("OrderID"));
+            o.setStatus(rs.getString("Status"));
+            o.setOrderCode(rs.getString("OrderCode"));
+            list.add(o);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
+   // Cập nhật trạng thái order
+public void updateOrderStatus(int orderID, String newStatus) {
+    String sql = "UPDATE [Order] SET Status = ? WHERE OrderID = ?";
+    try (Connection con = DBContext.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, newStatus);
+        ps.setInt(2, orderID);
+        ps.executeUpdate();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
 }
