@@ -2,6 +2,7 @@ package controller;
 
 import dal.ItemSizePriceDAO;
 import dal.PromotionDAO;
+import dal.CategoryDAO; // ✅ Thêm import này
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -10,6 +11,7 @@ import java.util.*;
 import model.MenuItem;
 import model.ItemSizePrice;
 import model.Promotion;
+import model.Category; // ✅ Thêm import này
 import java.util.concurrent.ThreadLocalRandom;
 
 @WebServlet(name = "HomeServlet", urlPatterns = {"/HomePage"})
@@ -78,6 +80,11 @@ public class HomeServlet extends HttpServlet {
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
 
+        // --- Lấy danh sách category ---
+CategoryDAO categoryDAO = new CategoryDAO();
+List<Category> categoryList = categoryDAO.getAllCategories();
+request.setAttribute("categoryList", categoryList);
+
         // 🔹 Mã đơn hàng nếu chưa có
         if (session.getAttribute("orderCode") == null) {
             session.setAttribute("orderCode", generateOrderCode());
@@ -103,6 +110,7 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("cartData", cartData);
         }
 
+        // ✅ Chuyển sang JSP
         request.getRequestDispatcher("MenuPage.jsp").forward(request, response);
     }
 
@@ -120,5 +128,4 @@ public class HomeServlet extends HttpServlet {
         }
         return sb.toString();
     }
-
 }

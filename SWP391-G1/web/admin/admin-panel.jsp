@@ -11,7 +11,7 @@
         background-color: #f4f6f8;
         display: flex;
         height: 100vh;
-        overflow: hidden;
+        overflow: hidden; /* Không cho body scroll */
     }
 
     /* Sidebar */
@@ -22,6 +22,10 @@
         display: flex;
         flex-direction: column;
         padding: 20px;
+        overflow-y: auto;       /* ✅ Cho phép cuộn dọc */
+        overflow-x: hidden;     /* Ẩn thanh cuộn ngang */
+        height: 100vh;          /* ✅ Giới hạn chiều cao theo viewport */
+        box-sizing: border-box; /* Đảm bảo padding không làm vỡ layout */
     }
 
     .sidebar h2 {
@@ -39,13 +43,13 @@
         color: white;
         text-decoration: none;
         display: block;
+        white-space: nowrap; /* Không xuống dòng menu */
     }
 
     .menu-item:hover {
         background-color: #34495e;
     }
 
-    /* Khi active */
     .menu-item.active {
         background-color: #1abc9c;
         font-weight: bold;
@@ -93,13 +97,18 @@
         background-color: #c0392b;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar {
+    /* Scrollbar tuỳ chỉnh riêng cho sidebar */
+    .sidebar::-webkit-scrollbar {
         width: 8px;
     }
-    ::-webkit-scrollbar-thumb {
-        background: #bbb;
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background: #555;
         border-radius: 8px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+        background: #1abc9c;
     }
 </style>
 
@@ -108,7 +117,7 @@
     <h2>Admin Panel</h2>
 
     <a class="menu-item <%= currentPath.contains("/admin/dashboard") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/dashboard">
+       href="${pageContext.request.contextPath}/admin/home.jsp">
         Dashboard
     </a>
 
@@ -157,5 +166,10 @@
     <a class="menu-item <%= currentPath.contains("/admin/feedback") ? "active" : "" %>" 
        href="${pageContext.request.contextPath}/admin/feedback">
         Feedback
+    </a>
+    
+        <a class="menu-item <%= currentPath.contains("/BlogController") ? "active" : "" %>" 
+       href="${pageContext.request.contextPath}/BlogController">
+        Blog
     </a>
 </div>

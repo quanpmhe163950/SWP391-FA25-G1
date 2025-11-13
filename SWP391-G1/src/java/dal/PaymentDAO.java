@@ -14,13 +14,12 @@ import java.sql.PreparedStatement;
 public class PaymentDAO {
 
     public void insertPayment(String paymentID, int orderID, double amount, String method, String status) throws Exception {
-        String sql = "INSERT INTO Payment (PaymentID, OrderID, Amount, Method, Status, TransactionDate) VALUES (?, ?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO Payment (OrderID, Amount, Method, Status, TransactionDate) VALUES (?, ?, ?, ?, GETDATE())";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, paymentID);
-            ps.setInt(2, orderID);
-            ps.setDouble(3, amount);
-            ps.setString(4, method);
-            ps.setString(5, status);
+            ps.setInt(1, orderID);
+            ps.setDouble(2, amount);
+            ps.setString(3, method);
+            ps.setString(4, status);
             ps.executeUpdate();
         }
     }

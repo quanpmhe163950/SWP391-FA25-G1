@@ -200,8 +200,6 @@
 
                     <td>
                         <a href="editItem?itemID=<%= i.getItemID() %>">✏️ Edit</a> |
-                        <a href="deleteItem?itemID=<%= i.getItemID() %>"
-                           onclick="return confirm('Mark this item as unavailable?');">🗑️ Delete</a>
                     </td>
                 </tr>
                 <% } %>
