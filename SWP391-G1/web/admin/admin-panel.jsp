@@ -1,9 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<%
-    String currentPath = request.getRequestURI(); // Lấy URL hiện tại
-%>
-
 <style>
     body {
         margin: 0;
@@ -11,7 +7,7 @@
         background-color: #f4f6f8;
         display: flex;
         height: 100vh;
-        overflow: hidden; /* Không cho body scroll */
+        overflow: hidden;
     }
 
     /* Sidebar */
@@ -22,10 +18,6 @@
         display: flex;
         flex-direction: column;
         padding: 20px;
-        overflow-y: auto;       /* ✅ Cho phép cuộn dọc */
-        overflow-x: hidden;     /* Ẩn thanh cuộn ngang */
-        height: 100vh;          /* ✅ Giới hạn chiều cao theo viewport */
-        box-sizing: border-box; /* Đảm bảo padding không làm vỡ layout */
     }
 
     .sidebar h2 {
@@ -39,21 +31,13 @@
         margin: 6px 0;
         cursor: pointer;
         border-radius: 8px;
-        transition: background 0.3s, color 0.3s;
+        transition: background 0.3s;
         color: white;
         text-decoration: none;
-        display: block;
-        white-space: nowrap; /* Không xuống dòng menu */
     }
 
     .menu-item:hover {
         background-color: #34495e;
-    }
-
-    .menu-item.active {
-        background-color: #1abc9c;
-        font-weight: bold;
-        color: #fff;
     }
 
     /* Navbar */
@@ -97,79 +81,28 @@
         background-color: #c0392b;
     }
 
-    /* Scrollbar tuỳ chỉnh riêng cho sidebar */
-    .sidebar::-webkit-scrollbar {
+    /* Scrollbar */
+    ::-webkit-scrollbar {
         width: 8px;
     }
-
-    .sidebar::-webkit-scrollbar-thumb {
-        background: #555;
+    ::-webkit-scrollbar-thumb {
+        background: #bbb;
         border-radius: 8px;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb:hover {
-        background: #1abc9c;
     }
 </style>
 
 <!-- Sidebar -->
 <div class="sidebar">
     <h2>Admin Panel</h2>
-
-    <a class="menu-item <%= currentPath.contains("/admin/dashboard") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/home.jsp">
-        Dashboard
-    </a>
-
-    <a class="menu-item <%= currentPath.contains("/admin/account") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/account">
-        Customer Management
-    </a>
-
-    <a class="menu-item <%= currentPath.contains("/admin/staff") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/staff">
-        Staff Management
-    </a>
-
-    <a class="menu-item <%= currentPath.contains("/admin/ingredient") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/ingredient">
-        Inventory
-    </a>
-
-    <a class="menu-item <%= currentPath.contains("/admin/supplier-ingredient") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/supplier-ingredient">
-        Suppliers
-    </a>
-
-    <a class="menu-item <%= currentPath.contains("/admin/purchase-order") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/purchase-order">
-        Purchase Orders
-    </a>
-
-    <!-- 🔹 NEW: Category Management -->
-    <a class="menu-item <%= currentPath.contains("/listCategory") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/listCategory">
-        Categories
-    </a>
-
-    <!-- 🔹 UPDATED: Products now link to listItem -->
-    <a class="menu-item <%= currentPath.contains("/listItem") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/listItem">
-        Products
-    </a>
-
-    <a class="menu-item <%= currentPath.contains("/admin/recipe") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/recipe">
-        Recipes
-    </a>
-
-    <a class="menu-item <%= currentPath.contains("/admin/feedback") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/admin/feedback">
-        Feedback
-    </a>
-    
-        <a class="menu-item <%= currentPath.contains("/BlogController") ? "active" : "" %>" 
-       href="${pageContext.request.contextPath}/BlogController">
-        Blog
-    </a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/account">User Management</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/BlogController">Edit Blog</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/combo.jsp">Edit Combos</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/supplier-ingredient">Suppliers</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/purchase">Purchase Orders</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/food">Products</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/recipe">Recipes</a>
+    <a class="menu-item" href="${pageContext.request.contextPath}/admin/feedback">Feedback</a>
 </div>
