@@ -185,20 +185,6 @@
                 <img src="images/z7061950791630_395c8424b197b70abd984287f01356b9.jpg"
                      onclick="window.location.href = 'HomePage'">
             </div>
-            <div class="icons">
-                <span>🔔</span>
-                <%
-                    Object token = session.getAttribute("userToken");
-                    if (token != null) {
-                %>
-                <span title="Tài khoản của tôi">👤</span>
-                <% } else { %>
-                <button style="background:#ff6600;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;"
-                        onclick="window.location.href = 'login.jsp'">Login</button>
-                <button style="background:#666;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;"
-                        onclick="window.location.href = 'register.jsp'">Register</button>
-                <% } %>
-            </div>
         </header>
         <main>
             <button onclick="goBack()">← Quay lại trang chủ</button>
@@ -321,7 +307,7 @@
             function goBack() {
                 fetch("Cart", {method: "GET", credentials: "include", cache: "no-store"})
                         .finally(() => {
-                            const encodedUrl = "<%= response.encodeURL("HomePage?fromPayment=true") %>" + "&ts=" + new Date().getTime();
+                            const encodedUrl = "<%= response.encodeURL("MenuPage?fromPayment=true") %>" + "&ts=" + new Date().getTime();
                             window.location.href = encodedUrl;
                         });
             }
