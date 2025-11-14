@@ -3,34 +3,53 @@ package dal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DBContext {
+
     private static final String USER = "sa";
     private static final String PASS = "123";
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=PizzaManagement;useUnicode=true;characterEncoding=UTF-8;encrypt=false;trustServerCertificate=true";
+    private static final String URL =
+            "jdbc:sqlserver://localhost:1433;"
+            + "databaseName=PizzaManagement;"
+            + "encrypt=false;"
+            + "trustServerCertificate=true;";
 
-    public static Connection connection;
+    // ✅ connection static: để DAO cũ vẫn dùng được
+    public static Connection connection = null;
 
-    public DBContext() {
+    static {
         try {
+            // ✅ Load driver 1 lần khi ứng dụng khởi động
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            System.out.println("✅ SQLServer Driver loaded");
+
+            // ✅ Tạo kết nối ban đầu
             connection = DriverManager.getConnection(URL, USER, PASS);
-            System.out.println("✅ Connected to: " + connection.getCatalog());
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("✅ Connected to DB (initial)");
+        } catch (Exception e) {
+            System.out.println("❌ Cannot initialize DB connection");
+            e.printStackTrace();
         }
     }
-    // ✅ Luôn trả về connection đã mở
+
+    // ✅ Luôn trả về connection có thể dùng
     public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
+                System.out.println("⚠ Connection null/closed → reconnecting...");
+
                 connection = DriverManager.getConnection(URL, USER, PASS);
+                System.out.println("✅ Reconnected to DB");
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException e) {
+            System.out.println("❌ Reconnect failed");
+            e.printStackTrace();
         }
         return connection;
+    }
+
+    // ✅ Constructor này để DAO cũ gọi new DBContext() vẫn OK
+    public DBContext() {
+        // Không làm gì, vì static block lo hết
     }
 }

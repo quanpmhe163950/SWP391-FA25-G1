@@ -1,154 +1,167 @@
-<%-- 
-    Document   : addCategory
-    Created on : Oct 24, 2025, 4:28:39 PM
-    Author     : admin
---%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.util.Map"%>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Pizza Shop - Add Category</title>
+    <title>Add Category</title>
+
     <style>
-        /* Đặt form giữa màn hình */
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f4f6f8;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Hộp chứa form */
-        .form-container {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        /* Main container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: white;
+            height: 60px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+        }
+
+        .navbar h1 {
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+        }
+
+        .form-box {
+            background: white;
             padding: 25px 30px;
             width: 480px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        h1 {
-            color: #333;
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
+        label { font-weight: bold; display: block; margin-top: 12px; }
 
         input[type=text],
-        select,
-        textarea {
+        textarea,
+        select {
             width: 100%;
             padding: 8px;
-            margin-top: 5px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
             box-sizing: border-box;
+            margin-top: 4px;
             font-size: 14px;
         }
 
-        textarea {
-            resize: none; /* Không cho kéo */
-            height: 100px; /* Cố định chiều cao */
-        }
-
-        .error {
-            color: red;
-            font-size: 0.9em;
-            margin-left: 3px;
-        }
-
-        .success-message {
-            color: green;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+        textarea { resize: none; height: 90px; }
 
         .submit-btn {
+            margin-top: 18px;
             background-color: #007bff;
             color: white;
             border: none;
             padding: 10px 18px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
         }
+        .submit-btn:hover { background-color: #0056b3; }
 
-        .submit-btn:hover {
-            background-color: #0056b3;
-        }
+        .success-message { color: green; font-weight: bold; margin-bottom: 10px; }
+        .error-message { color: red; font-weight: bold; margin-bottom: 10px; }
+        .error { color: red; font-size: 0.9em; }
+        
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
 
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        p {
-            margin-top: 8px;
-            font-size: 14px;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #bbb; border-radius: 8px; }
     </style>
 </head>
-<body>
-    <div class="form-container">
-        <h1>Add New Category</h1>
 
-        <%
+<body>
+
+<!-- ✅ Sidebar -->
+<jsp:include page="admin/admin-panel.jsp" />
+
+<!-- ✅ Main container -->
+<div class="main-container">
+
+    <!-- ✅ Navbar -->
+    <div class="navbar">
+        <h1>Add New Category</h1>
+        <jsp:include page="admin/user-info.jsp" />
+    </div>
+
+    <!-- ✅ Main Content -->
+    <div class="main-content">
+
+        <% 
             String successMessage = (String) request.getAttribute("successMessage");
             String errorMessage = (String) request.getAttribute("errorMessage");
-            java.util.Map<String, String> errors = (java.util.Map<String, String>) request.getAttribute("errors");
+            Map<String, String> errors = (Map<String, String>) request.getAttribute("errors");
         %>
 
-        <% if (successMessage != null) { %>
-        <div class="success-message"><%= successMessage %></div>
-        <% } else if (errorMessage != null) { %>
-        <div class="error-message"><%= errorMessage %></div>
-        <% } %>
+        <div class="form-box">
 
-        <form action="addCategory" method="post">
-            <!-- Category Name -->
-            <label for="categoryName">Category Name:</label>
-            <input type="text" id="categoryName" name="categoryName" required
-                   value="<%= request.getAttribute("categoryName") != null ? request.getAttribute("categoryName") : "" %>">
-            <span class="error"><%= errors != null && errors.get("categoryNameError") != null ? errors.get("categoryNameError") : "" %></span>
+            <% if (successMessage != null) { %>
+                <div class="success-message"><%= successMessage %></div>
+            <% } else if (errorMessage != null) { %>
+                <div class="error-message"><%= errorMessage %></div>
+            <% } %>
 
-            <!-- Description -->
-            <label for="description">Description:</label>
-            <textarea id="description" name="description"><%= request.getAttribute("description") != null ? request.getAttribute("description") : "" %></textarea>
-            <span class="error"><%= errors != null && errors.get("descriptionError") != null ? errors.get("descriptionError") : "" %></span>
+            <form action="addCategory" method="post">
 
-            <!-- Status -->
-            <label for="status">Status:</label>
-            <select id="status" name="status">
-                <option value="Available" <%= "Available".equals(request.getAttribute("status")) ? "selected" : "" %>>Available (Hoạt động)</option>
-                <option value="Unavailable" <%= "Unavailable".equals(request.getAttribute("status")) ? "selected" : "" %>>Unavailable (Ngừng hoạt động)</option>
-            </select>
+                <!-- Category Name -->
+                <label for="categoryName">Category Name:</label>
+                <input type="text" id="categoryName" name="categoryName" required
+                    value="<%= request.getAttribute("categoryName") != null ? request.getAttribute("categoryName") : "" %>">
+                <span class="error">
+                    <%= errors != null && errors.get("categoryNameError") != null ? errors.get("categoryNameError") : "" %>
+                </span>
 
-            <button type="submit" class="submit-btn">Add Category</button>
+                <!-- Description -->
+                <label for="description">Description:</label>
+                <textarea id="description" name="description"><%= request.getAttribute("description") != null ? request.getAttribute("description") : "" %></textarea>
+                <span class="error">
+                    <%= errors != null && errors.get("descriptionError") != null ? errors.get("descriptionError") : "" %>
+                </span>
 
-            <p><a href="addItem">Đến trang thêm món ăn</a></p>
-            <p><a href="listCategory">Đến trang danh sách danh mục</a></p>
-        </form>
+                <!-- Status -->
+                <label for="status">Status:</label>
+                <select id="status" name="status">
+                    <option value="Available" <%= "Available".equals(request.getAttribute("status")) ? "selected" : "" %>>Available (Active)</option>
+                    <option value="Unavailable" <%= "Unavailable".equals(request.getAttribute("status")) ? "selected" : "" %>>Unavailable</option>
+                </select>
+
+                <button type="submit" class="submit-btn">Add Category</button>
+
+                <p style="margin-top: 12px;">
+                    <a href="listCategory">← Back to Category List</a>
+                </p>
+
+            </form>
+        </div>
+
     </div>
+
+</div>
+
 </body>
 </html>

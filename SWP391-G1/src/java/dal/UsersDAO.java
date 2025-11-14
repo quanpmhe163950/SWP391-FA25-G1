@@ -83,4 +83,28 @@ public class UsersDAO {
         }
         return null;
     }
+    
+    /**
+     * Lấy userID (dạng String) dựa theo số điện thoại
+     * @param phone số điện thoại người dùng
+     * @return userID dưới dạng String nếu tồn tại, null nếu không có
+     */
+    public String getUserIDByPhone(String phone) {
+        String sql = "SELECT userID FROM [User] WHERE phone = ?";
+        try (Connection conn = db.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, phone);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Ép kiểu về String để tương thích với controller
+                    return String.valueOf(rs.getInt("userID"));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Không tìm thấy user
+    }
 }

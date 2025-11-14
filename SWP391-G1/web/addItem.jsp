@@ -1,141 +1,211 @@
-<%-- 
-    Document   : addItem.jsp
-    Created on : Oct 10, 2025, 3:33:32 PM
-    Author     : admin
---%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@page import="model.Category"%>
+
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Pizza Shop - Add Item</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                height: 100vh; /* Chiều cao toàn màn hình */
-                display: flex;
-                justify-content: center; /* Căn giữa ngang */
-                align-items: center;     /* Căn giữa dọc */
-                background-color: #f5f5f5;
-            }
-            .form-container {
-                background-color: #f9f9f9;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                padding: 25px 30px;
-                width: 500px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            }
-            h2 {
-                color: #333;
-                margin-top: 0;
-            }
-            label {
-                font-weight: bold;
-                display: block;
-                margin-top: 10px;
-            }
-            input[type=text],
-            input[type=number],
-            select,
-            textarea {
-                width: 100%;
-                padding: 8px;
-                margin-top: 5px;
-                margin-bottom: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                box-sizing: border-box;
-                font-size: 14px;
-            }
-            textarea {
-                resize: none; /* Không cho kéo */
-                height: 120px; /* Cố định chiều cao */
-            }
-            .btn-submit {
-                background-color: #007bff;
-                color: white;
-                border: none;
-                padding: 10px 18px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-weight: bold;
-            }
-            .btn-submit:hover {
-                background-color: #0056b3;
-            }
-            .error-global {
-                color: red;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
+<head>
+    <meta charset="UTF-8">
+    <title>Add Item</title>
 
-            .success {
-                color: green;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-            .error {
-                color: red;
-                font-size: 20px;
-            }
-            .size-row {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 8px;
-            }
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-            .size-row input {
-                flex: 1;
-            }
+        /* Main container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
 
-            .btn-add {
-                background-color: #28a745;
-                color: white;
-                border: none;
-                padding: 6px 10px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 14px;
-            }
+        /* Navbar */
+        .navbar {
+            background-color: white;
+            height: 60px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+        }
 
-            .btn-add:hover {
-                background-color: #218838;
-            }
+        .navbar h1 {
+            font-size: 20px;
+            color: #2c3e50;
+        }
 
-            .btn-remove {
-                background-color: #dc3545;
-                color: white;
-                border: none;
-                padding: 4px 8px;
-                border-radius: 4px;
-                cursor: pointer;
-            }
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+        }
 
-            .btn-remove:hover {
-                background-color: #c82333;
-            }
+        .form-box {
+            width: 620px;
+            background: white;
+            border-radius: 12px;
+            padding: 25px 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-        </style>
-    </head>
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 15px;
+        }
 
-    <body>
+        input[type=text],
+        input[type=number],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
 
-        <div class="form-container">
-            <h2>Add New Item</h2>
+        textarea {
+            resize: none;
+            height: 100px;
+        }
 
-            <%-- Hiển thị thông báo tổng thể --%>
+        button {
+            margin-top: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-global { color: red; font-weight: bold; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-size: 0.9em; }
+
+        .size-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .size-row input {
+            flex: 1;
+        }
+
+        .btn-add {
+            background-color: #28a745;
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+
+        .btn-add:hover {
+            background-color: #218838;
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            padding: 6px 8px;
+            font-size: 14px;
+        }
+
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        a:hover { text-decoration: underline; }
+
+        h2 { margin-top: 0; color: #333; }
+        
+        .size-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.size-row select {
+    flex: 7;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.size-row input[type=number] {
+    flex: 3;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.size-row .btn-remove {
+    background-color: #dc3545;
+    padding: 6px 8px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.size-row .btn-remove:hover {
+    background-color: #c82333;
+}
+
+    </style>
+</head>
+
+<body>
+
+<!-- ✅ Sidebar -->
+<jsp:include page="admin/admin-panel.jsp" />
+
+<!-- ✅ Main container -->
+<div class="main-container">
+
+    <!-- ✅ Navbar -->
+    <div class="navbar">
+        <h1>Add New Item</h1>
+        <jsp:include page="admin/user-info.jsp" />
+    </div>
+
+    <!-- ✅ Main content -->
+    <div class="main-content">
+
+        <div class="form-box">
+
+            <%-- MESSAGES --%>
             <% if (request.getAttribute("errorMessage") != null) { %>
-            <p class="error-global"><%= request.getAttribute("errorMessage") %></p>
+                <p class="error-global"><%= request.getAttribute("errorMessage") %></p>
             <% } %>
 
             <% if (request.getAttribute("successMessage") != null) { %>
-            <p class="success"><%= request.getAttribute("successMessage") %></p>
+                <p class="success"><%= request.getAttribute("successMessage") %></p>
             <% } %>
 
             <%
@@ -145,7 +215,6 @@
                 String status = (String) request.getAttribute("status");
 
                 String categoryID = null;
-                // ✅ Thêm logic tự động lấy categoryID từ URL nếu có
                 if (request.getAttribute("categoryID") != null) {
                     categoryID = (String) request.getAttribute("categoryID");
                 } else if (request.getParameter("categoryID") != null) {
@@ -157,102 +226,137 @@
 
             <form action="addItem" method="POST" enctype="multipart/form-data">
 
-                <%-- Item Name --%>
-                <label for="itemName">Item name:</label><br>
-                <input type="text" id="itemName" name="itemName" 
+                <!-- Item Name -->
+                <label for="itemName">Item name:</label>
+                <input type="text" id="itemName" name="itemName"
                        value="<%= itemName != null ? itemName : "" %>" required>
                 <span class="error"><%= (errors != null && errors.get("itemNameError") != null) ? errors.get("itemNameError") : "" %></span>
-                <br>
 
-                <%-- Description --%>
-                <label for="description">Description:</label><br>
-                <textarea id="description" name="description" rows="3"><%= description != null ? description : "" %></textarea>
-                <br>
+                <!-- Description -->
+                <label for="description">Description:</label>
+                <textarea id="description" name="description"><%= description != null ? description : "" %></textarea>
 
-                <%-- Category --%>
-                <label for="categoryID">Category:</label><br>
+                <!-- Category -->
+                <label for="categoryID">Category:</label>
                 <select id="categoryID" name="categoryID" required>
                     <option value="">-- Select Category --</option>
-                    <%
+
+                    <% 
                         if (categoryList != null) {
                             for (Category category : categoryList) {
-                                boolean selected = (categoryID != null && categoryID.equals(String.valueOf(category.getCategoryID())));
+                                boolean selected = (categoryID != null &&
+                                        categoryID.equals(String.valueOf(category.getCategoryID())));
                     %>
-                    <option value="<%= category.getCategoryID() %>" <%= selected ? "selected" : "" %>>
-                        <%= category.getCategoryName() %>
+                    <option value="<%=category.getCategoryID()%>" <%=selected ? "selected" : "" %>>
+                        <%=category.getCategoryName()%>
                     </option>
-                    <%
+                    <% 
                             }
                         }
                     %>
                 </select>
                 <span class="error"><%= (errors != null && errors.get("categoryError") != null) ? errors.get("categoryError") : "" %></span>
-                <br>
 
-                <%-- Sizes & Prices --%>
+                <!-- Size & Price -->
                 <h3>Size & Price</h3>
                 <div id="sizes-container">
-                    <% 
-                        // Nếu người dùng nhập sai và reload lại form, giữ dữ liệu size/price đã nhập
-                        String[] sizes = request.getParameterValues("size");
-                        String[] prices = request.getParameterValues("price");
-                        if (sizes != null && prices != null) {
-                            for (int i = 0; i < sizes.length; i++) {
-                    %>
-                    <div class="size-row">
-                        <input type="text" name="size" value="<%= sizes[i] %>" placeholder="Size (e.g. Lon cao, Nhỏ, Combo...)" required>
-                        <input type="number" name="price" value="<%= prices[i] %>" placeholder="Price" step="0.01" required>
-                        <button type="button" class="btn-remove" onclick="removeRow(this)">❌</button>
-                    </div>
-                    <% 
-                            }
-                        } else { 
-                    %>
-                    <div class="size-row">
-                        <input type="text" name="size" placeholder="Size (e.g. Lon cao, Nhỏ, Combo...)" required>
-                        <input type="number" name="price" placeholder="Price" step="0.01" required>
-                    </div>
-                    <% } %>
-                </div>
+
+    <%
+        String[] sizes = request.getParameterValues("size");
+        String[] prices = request.getParameterValues("price");
+
+        if (sizes != null && prices != null) {
+            for (int i = 0; i < sizes.length; i++) {
+    %>
+        <div class="size-row">
+            <select name="size" required>
+                <option value="">-- Select Size --</option>
+                <option value="Đại" <%= "Đại".equals(sizes[i]) ? "selected" : "" %>>Đại</option>
+                <option value="Lớn" <%= "Lớn".equals(sizes[i]) ? "selected" : "" %>>Lớn</option>
+                <option value="Vừa" <%= "Vừa".equals(sizes[i]) ? "selected" : "" %>>Vừa</option>
+                <option value="Nhỏ" <%= "Nhỏ".equals(sizes[i]) ? "selected" : "" %>>Nhỏ</option>
+            </select>
+
+            <input type="number" name="price"
+       value="<%= prices[i] != null ? prices[i] : "" %>"
+       step="0.01" placeholder="Price" required>
+
+
+            <button type="button" class="btn-remove" onclick="removeRow(this)">❌</button>
+        </div>
+    <% 
+            }
+        } else { 
+    %>
+        <div class="size-row">
+            <select name="size" required>
+                <option value="">-- Select Size --</option>
+                <option value="Đại">Đại</option>
+                <option value="Lớn">Lớn</option>
+                <option value="Vừa">Vừa</option>
+                <option value="Nhỏ">Nhỏ</option>
+            </select>
+
+            <input type="number" name="price"
+                   placeholder="Price" step="0.01" required>
+        </div>
+    <% } %>
+
+</div>
 
                 <button type="button" class="btn-add" onclick="addSizeRow()">+ Add another size</button>
                 <span class="error"><%= (errors != null && errors.get("sizeError") != null) ? errors.get("sizeError") : "" %></span>
-                <br><br>
 
-                <%-- Status --%>
-                <label for="status">Status:</label><br>
+                <!-- Status -->
+                <label for="status">Status:</label>
                 <select id="status" name="status" required>
                     <option value="Available" <%= "Available".equals(status) ? "selected" : "" %>>Available</option>
                     <option value="Unavailable" <%= "Unavailable".equals(status) ? "selected" : "" %>>Unavailable</option>
                 </select>
-                <br>
 
-                <%-- Image --%>
-                <label for="image">Image:</label><br>
+                <!-- Image -->
+                <label for="image">Image:</label>
                 <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png">
                 <span class="error"><%= (errors != null && errors.get("imageError") != null) ? errors.get("imageError") : "" %></span>
-                <br><br>
+
+                <br>
 
                 <button type="submit">Add Item</button>
-            </form>
-        </div>
 
-    </body>
-</html>
+                <p style="margin-top: 12px;">
+                    <a href="listCategory">← Back to Category List</a>
+                </p>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
 <script>
-    function addSizeRow() {
-        const container = document.getElementById('sizes-container');
-        const div = document.createElement('div');
-        div.className = 'size-row';
-        div.innerHTML = `
-        <input type="text" name="size" placeholder="Size (e.g. Lon cao, Nhỏ, Combo...)" required>
+   function addSizeRow() {
+    const container = document.getElementById('sizes-container');
+    const div = document.createElement('div');
+    div.className = 'size-row';
+    div.innerHTML = `
+        <select name="size" required>
+            <option value="">-- Select Size --</option>
+            <option value="Đại">Đại</option>
+            <option value="Lớn">Lớn</option>
+            <option value="Vừa">Vừa</option>
+            <option value="Nhỏ">Nhỏ</option>
+        </select>
+
         <input type="number" name="price" placeholder="Price" step="0.01" required>
         <button type="button" class="btn-remove" onclick="removeRow(this)">❌</button>
     `;
-        container.appendChild(div);
-    }
+    container.appendChild(div);
+}
 
     function removeRow(button) {
         button.parentElement.remove();
     }
 </script>
+
+</body>
+</html>
