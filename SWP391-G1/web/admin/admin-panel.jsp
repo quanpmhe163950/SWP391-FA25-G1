@@ -1,37 +1,27 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<style>
-    body {
-        margin: 0;
-        font-family: "Segoe UI", Arial, sans-serif;
-        background-color: #f4f6f8;
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-    }
+<%
+    String currentPath = request.getRequestURI();
+%>
 
-    /* Sidebar */
-    .sidebar {
+<style>
+    .sidebar-wrapper {
         width: 250px;
+        height: 100vh;
         background-color: #2c3e50;
         color: white;
-        display: flex;
-        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
         padding: 20px;
-    }
-
-    .sidebar h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 22px;
+        box-sizing: border-box;
+        flex-shrink: 0;   /* BẮT FLEX KHÔNG ĐƯỢC ÉP SIDEBAR THU NHỎ */
     }
 
     .menu-item {
         padding: 12px 15px;
         margin: 6px 0;
-        cursor: pointer;
         border-radius: 8px;
-        transition: background 0.3s;
+        display: block;
         color: white;
         text-decoration: none;
     }
@@ -40,69 +30,46 @@
         background-color: #34495e;
     }
 
-    /* Navbar */
-    .navbar {
-        background-color: white;
-        height: 60px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 25px;
-    }
-
-    .navbar h1 {
-        font-size: 20px;
-        color: #2c3e50;
-    }
-
-    .navbar .user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .navbar .username {
-        color: #333;
-        font-weight: 500;
-    }
-
-    .navbar button {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 8px 14px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    .navbar button:hover {
-        background-color: #c0392b;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: #bbb;
-        border-radius: 8px;
+    .menu-item.active {
+        background-color: #1abc9c;
+        font-weight: bold;
     }
 </style>
 
-<!-- Sidebar -->
-<div class="sidebar">
+<div class="sidebar-wrapper">
     <h2>Admin Panel</h2>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/account">User Management</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/BlogController">Edit Blog</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/combo.jsp">Edit Combos</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/supplier-ingredient">Suppliers</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/purchase">Purchase Orders</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/food">Products</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/recipe">Recipes</a>
-    <a class="menu-item" href="${pageContext.request.contextPath}/admin/feedback">Feedback</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/home.jsp") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/home.jsp">Dashboard</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/account") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/account">Customer Management</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/staff") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/staff">Staff Management</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/ingredient") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/ingredient">Inventory</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/supplier-ingredient") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/supplier-ingredient">Suppliers</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/purchase-order") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/purchase-order">Purchase Orders</a>
+
+    <a class="menu-item <%= currentPath.contains("/listCategory") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/listCategory">Categories</a>
+
+    <a class="menu-item <%= currentPath.contains("/listItem") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/listItem">Products</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/recipe") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/recipe">Recipes</a>
+
+    <a class="menu-item <%= currentPath.contains("/admin/blog") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/admin/blog?action=listForHome">Blog</a>
+
+    <a class="menu-item <%= currentPath.contains("/ComboController") ? "active" : "" %>"
+       href="${pageContext.request.contextPath}/ComboController">Combo</a>
 </div>
+

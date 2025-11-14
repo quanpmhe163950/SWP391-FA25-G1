@@ -36,7 +36,7 @@ public class CashPaymentServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("orderCode") == null) {
-            response.sendRedirect("HomePage");
+            response.sendRedirect("MenuPage");
             return;
         }
 
@@ -77,8 +77,11 @@ public class CashPaymentServlet extends HttpServlet {
 
             try {
                 String totalParam = request.getParameter("total");
-                if (totalParam != null) totalAmount = Double.parseDouble(totalParam);
-            } catch (Exception ignore) {}
+                if (totalParam != null) {
+                    totalAmount = Double.parseDouble(totalParam);
+                }
+            } catch (Exception ignore) {
+            }
 
             session.setAttribute("totalAmount", totalAmount);
             Object cartData = session.getAttribute("cartData");
@@ -98,13 +101,19 @@ public class CashPaymentServlet extends HttpServlet {
             }
 
             String promoCode = (String) session.getAttribute("pendingPromotionCode");
-            if (promoCode == null) promoCode = (String) session.getAttribute("appliedCode");
+            if (promoCode == null) {
+                promoCode = (String) session.getAttribute("appliedCode");
+            }
 
             double totalAmount = 0;
             Object totalObj = session.getAttribute("totalAmount");
-            if (totalObj instanceof Double) totalAmount = (Double) totalObj;
-            else if (totalObj instanceof String) {
-                try { totalAmount = Double.parseDouble((String) totalObj); } catch (Exception ignored) {}
+            if (totalObj instanceof Double) {
+                totalAmount = (Double) totalObj;
+            } else if (totalObj instanceof String) {
+                try {
+                    totalAmount = Double.parseDouble((String) totalObj);
+                } catch (Exception ignored) {
+                }
             }
 
             String cartJson = (String) session.getAttribute("cartData");
@@ -123,9 +132,8 @@ public class CashPaymentServlet extends HttpServlet {
             User user = (User) session.getAttribute("account");
             String waiterID = user != null ? String.valueOf(user.getUserID()) : null;
 
-
             if (cartItems.isEmpty()) {
-                response.sendRedirect("HomePage?error=emptyCart");
+                response.sendRedirect("MenuPage?error=emptyCart");
                 return;
             }
 
@@ -166,16 +174,16 @@ public class CashPaymentServlet extends HttpServlet {
                     double price = 0;
 
                     try {
-    if (!size.isEmpty()) {
-        price = itemDAO.getPriceByItemAndSize(mi.getId(), size); // lấy giá theo size
-    } else {
-        // Nếu size rỗng, lấy giá mặc định (size Regular) của món
-        price = itemDAO.getPriceByItemAndSize(mi.getId(), size); 
-    }
-} catch (Exception e) {
-    System.err.println("Error getting price for item " + name + " size=" + size + " : " + e.getMessage());
-    price = 0;
-}
+                        if (!size.isEmpty()) {
+                            price = itemDAO.getPriceByItemAndSize(mi.getId(), size); // lấy giá theo size
+                        } else {
+                            // Nếu size rỗng, lấy giá mặc định (size Regular) của món
+                            price = itemDAO.getPriceByItemAndSize(mi.getId(), size);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error getting price for item " + name + " size=" + size + " : " + e.getMessage());
+                        price = 0;
+                    }
 
                     // Insert order item
                     orderItemDAO.insertOrderItem(orderID, itemID, quantity, price);
@@ -185,7 +193,7 @@ public class CashPaymentServlet extends HttpServlet {
                 }
 
                 // 4. Insert Payment
-                String paymentID = "PM" + String.format("%08d", (int)(Math.random() * 100000000));
+                String paymentID = "PM" + String.format("%08d", (int) (Math.random() * 100000000));
                 paymentDAO.insertPayment(paymentID, orderID, totalAmount, "Cash", "Completed");
 
                 // 5. Xử lý Voucher
@@ -200,10 +208,14 @@ public class CashPaymentServlet extends HttpServlet {
                     int qty = item.optInt("quantity", 0);
                     String size = item.optString("size", "").trim();
 
-                    if (name.isEmpty() || qty <= 0) continue;
+                    if (name.isEmpty() || qty <= 0) {
+                        continue;
+                    }
 
                     MenuItem mi = itemDAO.getItemByName(name);
-                    if (mi == null) continue;
+                    if (mi == null) {
+                        continue;
+                    }
 
                     double price = 0;
                     try {
@@ -230,16 +242,16 @@ public class CashPaymentServlet extends HttpServlet {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                response.sendRedirect("HomePage?error=saveFailed");
+                response.sendRedirect("MenuPage?error=saveFailed");
                 return;
             }
 
             // Về trang chủ
-            response.sendRedirect("HomePage?resetSession=true");
+            response.sendRedirect("MenuPage?resetSession=true");
             return;
         }
 
-        response.sendRedirect("HomePage");
+        response.sendRedirect("MenuPage");
     }
 
     @Override

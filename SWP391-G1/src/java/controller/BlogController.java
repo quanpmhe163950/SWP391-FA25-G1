@@ -16,7 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
-@WebServlet("/BlogController")
+@WebServlet("/admin/blog")
+
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
         maxFileSize = 1024 * 1024 * 10,       // 10MB
@@ -52,7 +53,7 @@ public class BlogController extends HttpServlet {
                     e.printStackTrace();
                 }
 
-                response.sendRedirect(request.getContextPath() + "/BlogController");
+                response.sendRedirect(request.getContextPath() + "/admin/blog");
                 break;
             }
 
@@ -69,14 +70,14 @@ public class BlogController extends HttpServlet {
                     int id = Integer.parseInt(request.getParameter("id"));
                     Blog blog = dao.getBlogById(id);
                     if (blog == null) {
-                        response.sendRedirect(request.getContextPath() + "/BlogController");
+                        response.sendRedirect(request.getContextPath() + "/admin/blog");
                         return;
                     }
                     request.setAttribute("blog", blog);
                     request.getRequestDispatcher("/admin/editBlog.jsp").forward(request, response);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    response.sendRedirect(request.getContextPath() + "/BlogController");
+                    response.sendRedirect(request.getContextPath() + "/admin/blog");
                 }
                 break;
             }
@@ -119,7 +120,7 @@ public class BlogController extends HttpServlet {
                     return;
                 }
                 handleAdd(request, dao, (User) acct);
-                response.sendRedirect(request.getContextPath() + "/BlogController?action=listForHome");
+                response.sendRedirect(request.getContextPath() + "/admin/blog?action=listForHome");
                 return;
 
             } else if ("update".equalsIgnoreCase(action)) {
@@ -128,7 +129,7 @@ public class BlogController extends HttpServlet {
                     return;
                 }
                 handleUpdate(request, dao);
-                response.sendRedirect(request.getContextPath() + "/BlogController");
+                response.sendRedirect(request.getContextPath() + "/admin/blog");
                 return;
             }
 
