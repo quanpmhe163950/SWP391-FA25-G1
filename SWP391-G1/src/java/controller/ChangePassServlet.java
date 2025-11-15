@@ -8,6 +8,7 @@ import dal.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import util.PasswordUtil;
  *
  * @author ASUS
  */
+@WebServlet("/changepass")
 public class ChangePassServlet extends HttpServlet {
 
     private final CustomerDAO dao = new CustomerDAO();

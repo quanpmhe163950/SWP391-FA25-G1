@@ -109,7 +109,7 @@ select { min-width:160px; }
                 <input type="hidden" id="menuItemId" name="itemSizePriceId">
                 <div>
                     <label>Mô tả:</label><br>
-                    <textarea name="description" rows="3" required></textarea>
+                    <textarea name="description" rows="3"></textarea>
                 </div>
                 <div>
                     <label>Chọn nguyên liệu:</label>

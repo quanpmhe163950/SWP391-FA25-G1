@@ -350,4 +350,20 @@ public class PurchaseOrderDAO {
 
         return po;
     }
+    
+    public void updateStatus(int orderId, String status) {
+String sql = "UPDATE PurchaseOrder SET Status = ? WHERE PurchaseOrderID = ?";
+
+    try (Connection con = getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setString(1, status);
+        ps.setInt(2, orderId);
+        ps.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }

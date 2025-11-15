@@ -1,111 +1,86 @@
-<%-- 
-    Document   : ChangePassword
-    Created on : 29 thg 9, 2025, 23:18:32
-    Author     : ASUS
---%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-        <style>
+<div class="content" style="width: 100%; padding: 20px; box-sizing: border-box;">
 
-            .change-password-container {
-                max-width: 500px;
-                margin: 40px auto;
-                text-align: center;
-                font-size: 20px;
-                font-family: Arial, sans-serif;
-                margin-top: 0px;
+    <h2 style="
+        text-align: center; 
+        color: #FF8800; 
+        margin-bottom: 25px;
+        font-family: Arial, sans-serif;
+        font-size: 26px;
+        font-weight: bold;">
+        Đổi mật khẩu
+    </h2>
 
-            }
+    <!-- THÔNG BÁO LỖI -->
+    <c:if test="${error != null && error.trim() != ''}">
+        <div style="
+            padding: 12px; 
+            background: #fde2e2; 
+            color: #a30000; 
+            border-radius: 6px; 
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: Arial;">
+            ${error}
+        </div>
+    </c:if>
 
-            .change-password-container h2 {
-                font-size: 24px;
-                margin-bottom: 20px;
-                color: #028F46;
-            }
+    <!-- THÔNG BÁO THÀNH CÔNG -->
+    <c:if test="${success != null && success.trim() != ''}">
+        <div style="
+            padding: 12px; 
+            background: #e1f8e7; 
+            color: #0d7a3a; 
+            border-radius: 6px; 
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: Arial;">
+            ${success}
+        </div>
+    </c:if>
 
-            .change-password-container .mb-3 {
-                margin-bottom: 15px;
-                text-align: left;
-            }
+    <form action="changepass" method="post" 
+          style="max-width: 500px; margin: 0 auto; font-family: Arial, sans-serif;">
 
-            .change-password-container label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: bold;
-            }
+        <!-- CURRENT PASSWORD -->
+        <div style="margin-bottom: 18px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold;">
+                Mật khẩu hiện tại:
+            </label>
+            <input type="password" name="currentPassword" required
+                   style="width: 100%; padding: 10px; font-size: 16px; 
+                          border-radius: 6px; border: 1px solid #ccc;">
+        </div>
 
-            .change-password-container input[type="password"] {
-                width: 100%;
-                padding: 8px;
-                font-size: 16px;
-                border-radius: 5px;
-                border: 1px solid #ccc;
-            }
+        <!-- NEW PASSWORD -->
+        <div style="margin-bottom: 18px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold;">
+                Mật khẩu mới:
+            </label>
+            <input type="password" name="newPassword" required minlength="6"
+                   style="width: 100%; padding: 10px; font-size: 16px; 
+                          border-radius: 6px; border: 1px solid #ccc;">
+        </div>
 
-            .change-password-container .btn-primary {
-                display: block;
-                margin: 15px auto;
-                width: 150px;
-                padding: 6px 10px;
-                font-size: 18px;
-                background-color: #028F46;
-                border: none;
-                border-radius: 5px;
-                color: #fff;
-                cursor: pointer;
-                margin-top: 30px;
+        <!-- CONFIRM PASSWORD -->
+        <div style="margin-bottom: 18px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold;">
+                Xác nhận mật khẩu mới:
+            </label>
+            <input type="password" name="confirmPassword" required minlength="6"
+                   style="width: 100%; padding: 10px; font-size: 16px; 
+                          border-radius: 6px; border: 1px solid #ccc;">
+        </div>
 
-            }
+        <!-- BUTTON -->
+        <button type="submit"
+                style="display: block; margin: 0 auto; margin-top: 10px;
+                       width: 180px; padding: 10px; font-size: 18px;
+                       background: #FF8800; color: white; border: none;
+                       border-radius: 6px; cursor: pointer;">
+            Cập nhật
+        </button>
+    </form>
 
-
-            .change-password-container .btn-primary:hover {
-                background-color: #026c35; /* màu khi hover */
-            }
-            .edit-btn {
-                float: left;
-                cursor: pointer;
-                font-size: 18px;
-                color: #1E90FF;
-            }
-        </style>
-    </head>
-    <body>
-
-        <form action="changepass" method="post">
-            <div class="change-password-container">
-                <h2>Thông tin - Đổi mật khẩu</h2>
-
-                <div class="mb-3">
-                    <label>Mật khẩu hiện tại:</label>
-                    <input type="password" name="currentPassword" required>
-                </div>
-
-                <div class="mb-3">
-                    <label>Mật khẩu mới:</label>
-                    <input type="password" name="newPassword" required minlength="6">
-                </div>
-
-                <div class="mb-3">
-                    <label>Xác nhận mật khẩu mới:</label>
-                    <input type="password" name="confirmPassword" required minlength="6">
-                </div>
-                <div>
-                    <span class="edit-btn" onclick="FogotPassword()">Quên mật khẩu</span>
-                </div>
-                <button type="submit" class="btn-primary">Cập nhật</button>
-            </div>
-        </form>
-        <% if(request.getAttribute("error") != null){ %>
-        <div class="alert alert-danger mt-3"><%= request.getAttribute("error") %></div>
-        <% } %>
-        <% if(request.getAttribute("success") != null){ %>
-        <div class="alert alert-success mt-3"><%= request.getAttribute("success") %></div>
-        <% } %>
-
-    </body>
-</html>
+</div>

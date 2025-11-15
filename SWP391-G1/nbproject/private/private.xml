@@ -3,12 +3,23 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/BlogController.java</file>
-            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/BlogDAO.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/PurchaseOrderDAO.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/ItemSizePrice.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/ItemSizePriceDAO.java</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/admin-panel.jsp</file>
             <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/CategoryDAO.java</file>
-            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/blog.jsp</file>
-            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/food.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/recipe-management.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/order-history.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/Item.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/MenuItemServlet.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/MenuPage.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/OrderStatusController.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/web/admin/combo.jsp</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/MenuItemDAO.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/controller/MenuPageServlet.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/MenuItem.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/dal/IngredientDAO.java</file>
+            <file>file:/D:/SWP391-FA25/SWP391-FA25-G1/SWP391-G1/src/java/model/Category.java</file>
         </group>
     </open-files>
 </project-private>

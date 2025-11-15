@@ -121,7 +121,7 @@
                 </div>
                 <div class="button-group">
                     <button type="button" class="cancel-btn" 
-                            onclick="window.location.href = 'cusinfor?id=${customer.userID}'">
+                            onclick="window.location.href = 'cusinfo?id=${customer.userID}'">
                         Hủy
                     </button>
                     <button type="submit" class="submit-btn">Xác nhận</button>

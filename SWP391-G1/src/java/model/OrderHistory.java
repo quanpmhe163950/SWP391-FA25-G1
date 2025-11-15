@@ -3,49 +3,34 @@ package model;
 import java.util.Date;
 
 public class OrderHistory {
-
-    private int orderID;
+private String orderCode;
     private Date orderDate;
     private String itemName;
-    private double totalPrice;
-    private int itemID;
-    private Integer rating;
+    private int totalQuantity;
+    private double amount;
+    private String paymentMethod;
+    private String orderStatus;
+    private String itemList;
+
     public OrderHistory() {
     }
 
-    public OrderHistory(int orderID, Date orderDate, String itemName, double totalPrice, int itemID) {
-        this.orderID = orderID;
+    public OrderHistory(String orderCode, Date orderDate, String itemName, int quantity, double amount, String paymentMethod, String orderStatus) {
+        this.orderCode = orderCode;
         this.orderDate = orderDate;
         this.itemName = itemName;
-        this.totalPrice = totalPrice;
-        this.itemID = itemID;
+        this.totalQuantity= quantity;
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+        this.orderStatus = orderStatus;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
+    public String getOrderCode() {
+        return orderCode;
     }
 
-    public Integer getRating() {
-        return rating;
-    }
-
-   
-    
-    public int getItemID() {
-        return itemID;
-    }
-
-    public void setItemID(int itemID) {
-        this.itemID = itemID;
-    }
-    
-    // Getters & Setters
-    public int getOrderID() {
-        return orderID;
-    }
-
-    public void setOrderID(int orderID) {
-        this.orderID = orderID;
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 
     public Date getOrderDate() {
@@ -64,11 +49,52 @@ public class OrderHistory {
         this.itemName = itemName;
     }
 
-    public double getTotalPrice() {
-        return totalPrice;
+    public int getQuantity() {
+        return totalQuantity;
     }
 
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setQuantity(int quantity) {
+        this.totalQuantity = quantity;
     }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(String itemList) {
+        this.itemList = itemList;
+    }
+
+    public void setTotalQuantity(int totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
+    public int getTotalQuantity() {
+        return totalQuantity;
+    }
+    
 }

@@ -154,7 +154,7 @@ public class ItemSizePriceDAO extends DBContext {
     public Map<MenuItem, List<ItemSizePrice>> getMenuWithSizes() {
         Map<MenuItem, List<ItemSizePrice>> result = new LinkedHashMap<>();
         String sql = """
-            SELECT m.ItemID, m.Name, m.Description, m.ImagePath,
+            SELECT m.ItemID, m.Name, m.Description, m.ImagePath, m.CategoryID,
                                isp.Size, isp.Price
                         FROM MenuItem m
                         JOIN ItemSizePrice isp ON m.ItemID = isp.ItemID
@@ -177,6 +177,7 @@ public class ItemSizePriceDAO extends DBContext {
                     item.setName(rs.getString("Name"));
                     item.setDescription(rs.getString("Description"));
                     item.setImagePath(rs.getString("ImagePath"));
+                    item.setCategoryId(rs.getInt("CategoryID"));
                     itemMap.put(itemId, item);
                     result.put(item, new ArrayList<>());
                 }

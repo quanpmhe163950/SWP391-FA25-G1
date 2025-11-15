@@ -249,7 +249,7 @@ public class PurchaseOrderController extends HttpServlet {
 
             poDAO.addPurchaseOrderItem(item);
             System.out.println("✅ Added item to orderID " + orderID);
-            resp.sendRedirect("purchase-order?action=detail&id=" + orderID);
+            resp.sendRedirect("purchase-order" + orderID);
 
         } catch (NumberFormatException e) {
             System.err.println("❌ NumberFormatException when adding item: " + e.getMessage());

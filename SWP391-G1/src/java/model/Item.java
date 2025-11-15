@@ -14,6 +14,8 @@ public class Item {
     private String status;
     private String imagePath;
     private List<ItemSizePrice> sizePriceList;
+    private double defaultPrice;
+    private String categoryName;
 
     public Item() {
     }
@@ -42,6 +44,23 @@ public class Item {
         this.status = status;
     }
 
+    public double getDefaultPrice() {
+        return defaultPrice;
+    }
+
+    public void setDefaultPrice(double defaultPrice) {
+        this.defaultPrice = defaultPrice;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    
     public int getItemID() {
         return itemID;
     }

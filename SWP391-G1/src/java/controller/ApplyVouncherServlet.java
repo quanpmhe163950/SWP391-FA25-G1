@@ -140,7 +140,7 @@ public class ApplyVouncherServlet extends HttpServlet {
         session.setAttribute("voucherColor", color);
 
         // Quay lại HomePage để render lại tổng tiền với discount tạm thời
-        response.sendRedirect(response.encodeRedirectURL("HomePage?fromVoucher=true"));
+        response.sendRedirect(response.encodeRedirectURL("MenuPage?fromVoucher=true"));
     }
 
     @Override

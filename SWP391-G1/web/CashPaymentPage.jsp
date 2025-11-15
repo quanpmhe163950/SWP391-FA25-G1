@@ -183,7 +183,7 @@
         <header>
             <div class="logo">
                 <img src="images/z7061950791630_395c8424b197b70abd984287f01356b9.jpg"
-                     onclick="window.location.href = 'HomePage'">
+                     onclick="window.location.href = 'MenuPage'">
             </div>
         </header>
         <main>
@@ -302,7 +302,7 @@
                 } catch (err) {
                     console.error("Lỗi khi xác nhận thanh toán/ghi nhận voucher:", err);
                 }
-                window.location.href = "HomePage?resetSession=true";
+                window.location.href = "MenuPage?resetSession=true";
             }
             function goBack() {
                 fetch("Cart", {method: "GET", credentials: "include", cache: "no-store"})

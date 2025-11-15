@@ -1,6 +1,6 @@
 <div class="user-info">
     <span>Welcome, ${sessionScope.adminName}</span>
-    <form action="${pageContext.request.contextPath}/logout" method="post">
+    <form action="${pageContext.request.contextPath}/logout" method="get">
         <button type="submit">Logout</button>
     </form>
 </div>
