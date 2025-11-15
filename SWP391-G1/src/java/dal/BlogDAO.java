@@ -128,4 +128,36 @@ public class BlogDAO extends DBContext {
 
         return false;
     }
+    
+    public List<Blog> getAllBlog() {
+    List<Blog> list = new ArrayList<>();
+    String sql = "SELECT * FROM Blog ORDER BY CreatedDate DESC";
+
+    try {
+        PreparedStatement ps = DBContext.getConnection().prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Blog b = new Blog();
+            b.setBlogID(rs.getInt("BlogID"));
+            b.setTitle(rs.getString("Title"));
+            b.setContent(rs.getString("Content"));
+            b.setAuthorID(rs.getInt("AuthorID"));
+            b.setCreatedDate(rs.getTimestamp("CreatedDate"));
+            b.setUpdatedDate(rs.getTimestamp("UpdatedDate"));
+            b.setImage(rs.getString("Image"));
+            list.add(b);
+        }
+
+        rs.close();
+        ps.close();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    System.out.println("DEBUG: Tổng blog lấy được = " + list.size());
+    return list;
+}
+
 }

@@ -6,43 +6,46 @@ import model.OrderHistory;
 
 public class OrderHistoryDAO extends DBContext {
 
-    public List<OrderHistory> getOrderHistoryByCustomer(int customerId) throws SQLException {
+    public List<OrderHistory> getOrderHistoryByCustomer(int customerId) {
         List<OrderHistory> list = new ArrayList<>();
-        String sql = "SELECT o.OrderID, o.OrderDate, m.Name AS ItemName, "
-                + "oi.ItemID, "
-                + "SUM(oi.Quantity * oi.Price) AS TotalPrice, "
-                + "r.Rating "
-                + "FROM [Order] o "
-                + "JOIN OrderItem oi ON o.OrderID = oi.OrderID "
-                + "JOIN MenuItem m ON oi.ItemID = m.ItemID "
-                + "LEFT JOIN Review r ON r.ItemID = oi.ItemID AND r.CustomerID = o.CustomerID "
-                + "WHERE o.CustomerID = ? "
-                + "GROUP BY o.OrderID, o.OrderDate, m.Name, oi.ItemID, r.Rating "
-                + "ORDER BY o.OrderDate DESC";
+        String sql = """
+            SELECT 
+                o.OrderCode,
+                o.OrderDate,
+                STRING_AGG(i.name + ' (x' + CAST(oi.Quantity AS VARCHAR) + ')', ', ') 
+                    WITHIN GROUP (ORDER BY i.name) AS ItemList,
+                SUM(oi.Quantity) AS TotalQuantity,
+                p.Amount,
+                p.Method AS PaymentMethod,
+                o.Status AS OrderStatus
+            FROM [Order] o
+            JOIN [OrderItem] oi ON o.OrderID = oi.OrderID
+            JOIN [MenuItem] i ON oi.ItemID = i.ItemID
+            JOIN [Payment] p ON o.OrderID = p.OrderID
+            WHERE o.CustomerID = ?
+            GROUP BY o.OrderID, o.OrderCode, o.OrderDate, p.Amount, p.Method, o.Status
+            ORDER BY o.OrderDate DESC
+            """;
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, customerId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    OrderHistory oh = new OrderHistory();
-                    oh.setOrderID(rs.getInt("OrderID"));
-                    oh.setOrderDate(rs.getTimestamp("OrderDate"));
-                    oh.setItemName(rs.getString("ItemName"));
-                    oh.setItemID(rs.getInt("ItemID"));
-                    oh.setTotalPrice(rs.getDouble("TotalPrice"));
-                    Object ratingObj = rs.getObject("Rating");
-                    Integer rating = null;
-                    if (ratingObj instanceof Integer) {
-                        rating = (Integer) ratingObj;
-                    } else if (ratingObj instanceof Number) {
-                        rating = ((Number) ratingObj).intValue();
-                    }
-                    oh.setRating(rating);
-
-                    list.add(oh);
-                }
+       try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, customerId);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                OrderHistory oh = new OrderHistory();
+                oh.setOrderCode(rs.getString("OrderCode"));
+                oh.setOrderDate(rs.getTimestamp("OrderDate"));
+                oh.setItemList(rs.getString("ItemList"));
+                oh.setTotalQuantity(rs.getInt("TotalQuantity"));
+                oh.setAmount(rs.getDouble("Amount"));
+                oh.setPaymentMethod(rs.getString("PaymentMethod"));
+                oh.setOrderStatus(rs.getString("OrderStatus"));
+                list.add(oh);
             }
         }
-        return list;
+    } catch (SQLException e) {
+        System.err.println("Lỗi truy vấn lịch sử đơn hàng cho customerID = " + customerId);
+        e.printStackTrace();
     }
+    return list;
+   }
 }

@@ -49,9 +49,9 @@ public class LoginController extends HttpServlet {
             if (user.getRoleID() == 1) {
                 response.sendRedirect("admin/home.jsp");
             } else if (user.getRoleID() == 4) {
-                response.sendRedirect("HomePage");
+                response.sendRedirect("MenuPage");
             }else {
-                response.sendRedirect("HomePage.jsp");
+                response.sendRedirect("homepage");
             }
         } else {
             request.setAttribute("error", "Invalid username or password!");

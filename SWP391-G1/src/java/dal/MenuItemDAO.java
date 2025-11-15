@@ -3,6 +3,8 @@ package dal;
 import static dal.DBContext.getConnection;
 import java.sql.*;
 import java.util.*;
+import model.Item;
+import model.ItemSizePrice;
 import model.MenuItem;
 
 public class MenuItemDAO {
@@ -81,5 +83,64 @@ public double getPriceByItemAndSize(int id, String size) {
 
     return price;
 }
+
+   public List<Item> getAllItems() {
+    List<Item> items = new ArrayList<>();
+    String sql = "SELECT mi.ItemID, mi.Name, mi.Description, mi.ImagePath, " +
+                 "       mi.CategoryID, mi.Status, c.CategoryName, " +
+                 "       isp.ID AS SizeID, isp.Size, isp.Price, isp.Status AS SizeStatus " +
+                 "FROM MenuItem mi " +
+                 "JOIN Categories c ON mi.CategoryID = c.CategoryID " +
+                 "JOIN ItemSizePrice isp ON mi.ItemID = isp.ItemID " +
+                 "WHERE mi.Status = 'Available' AND isp.Status = 'Active' " +
+                 "ORDER BY mi.ItemID, isp.Size";
+
+    Map<Integer, Item> map = new HashMap<>();
+
+    try (Connection conn = getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            int itemId = rs.getInt("ItemID");
+
+            if (!map.containsKey(itemId)) {
+                Item item = new Item();
+                item.setItemID(itemId);
+                item.setName(rs.getString("Name"));
+                item.setDescription(rs.getString("Description"));
+                item.setImagePath(rs.getString("ImagePath"));
+                item.setCategoryID(rs.getInt("CategoryID"));
+                item.setStatus(rs.getString("Status"));
+                item.setCategoryName(rs.getString("CategoryName"));
+                item.setSizePriceList(new ArrayList<>());
+                item.setDefaultPrice(Double.MAX_VALUE); // set ban đầu là MAX
+                map.put(itemId, item);
+            }
+
+            ItemSizePrice sp = new ItemSizePrice();
+            sp.setId(rs.getInt("SizeID"));
+            sp.setItemID(itemId);
+            sp.setSize(rs.getString("Size"));
+            sp.setPrice(rs.getDouble("Price"));
+            sp.setStatus(rs.getString("SizeStatus"));
+
+            map.get(itemId).getSizePriceList().add(sp);
+
+            // Cập nhật giá mặc định = giá nhỏ nhất
+            if (sp.getPrice() < map.get(itemId).getDefaultPrice()) {
+                map.get(itemId).setDefaultPrice(sp.getPrice());
+            }
+        }
+
+        items.addAll(map.values());
+
+    } catch (SQLException e) {
+        System.err.println("❌ Lỗi khi lấy danh sách món ăn: " + e.getMessage());
+    }
+
+    return items;
+}
+
 
 }

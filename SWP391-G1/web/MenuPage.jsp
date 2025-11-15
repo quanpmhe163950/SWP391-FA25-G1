@@ -376,6 +376,7 @@
                 %>
                 <!-- Nếu đã đăng nhập -->
                 <span title="Tài khoản của tôi">👤</span>
+                <a href="logout" class="dropdown-item logout">Đăng xuất</a>
                 <%
                     } else {
                 %>
@@ -387,12 +388,16 @@
                 <%
                     }
                 %>
+                
             </div>
         </header>
         <main style="display: flex; gap: 30px;">
-            <!-- 🔹 Cột trái: danh sách đơn -->
-            <div id="completed-orders" class="orders-container" style="flex: 1; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow-y: auto;">
+            <!-- 🔹 Cột trái: danh sách đơn --><div>
+                <h4>Danh sách đơn hàng cần phục vụ </h4>
+                     <div id="completed-orders" class="orders-container" style="flex: 1; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow-y: auto;">
             </div>
+            </div>
+           
 
             <!-- 🔹 Cột phải: menu -->
             <div class="menu-container" style="flex: 2;">
@@ -404,7 +409,7 @@
                             if (categoryList != null) {
                                 for (Category c : categoryList) {
                         %>
-                        <option value="<%= c.getCategoryName() %>"><%= c.getCategoryName() %></option>
+                        <option value="<%= c.getCategoryID() %>"><%= c.getCategoryName() %></option>
                         <%
                                 }
                             }
@@ -424,7 +429,7 @@ Map<MenuItem, List<ItemSizePrice>> menuWithSizes =
                                List<ItemSizePrice> sizes = menuWithSizes.get(item);
                                for (ItemSizePrice isp : sizes) {
                     %>
-                    <div class="menu-item" data-category="<%= item.getCategory() %>">
+                    <div class="menu-item" data-category="<%= item.getCategoryId() %>">
                         <img src="<%= item.getImagePath() != null && !item.getImagePath().isEmpty() 
                                     ? item.getImagePath() 
                                     : "https://cdn-icons-png.flaticon.com/512/3132/3132693.png" %>" 
