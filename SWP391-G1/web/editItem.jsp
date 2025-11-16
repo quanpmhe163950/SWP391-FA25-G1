@@ -252,6 +252,7 @@
                 <option value="Nhỏ" <%= "Nhỏ".equals(isp.getSize()) ? "selected" : "" %>>Nhỏ</option>
                 <option value="Vừa" <%= "Vừa".equals(isp.getSize()) ? "selected" : "" %>>Vừa</option>
                 <option value="Lớn" <%= "Lớn".equals(isp.getSize()) ? "selected" : "" %>>Lớn</option>
+                <option value="Đại" <%= "Đại".equals(isp.getSize()) ? "selected" : "" %>>Đại</option>
             </select>
 
             <input type="number" name="sizePrice" 
