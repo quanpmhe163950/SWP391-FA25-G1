@@ -16,7 +16,7 @@ import java.util.*;
 @WebServlet(name = "EditItemServlet", urlPatterns = {"/editItem"})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024, // 1MB
-        maxFileSize = 5 * 1024 * 1024,   // 5MB
+        maxFileSize = 5 * 1024 * 1024, // 5MB
         maxRequestSize = 10 * 1024 * 1024 // 10MB
 )
 public class EditItemServlet extends HttpServlet {
@@ -62,7 +62,7 @@ public class EditItemServlet extends HttpServlet {
             String itemIDStr = request.getParameter("itemID");
             String name = request.getParameter("name");
             String status = request.getParameter("status");
-            String description = request.getParameter("description"); // 🔹 Lấy mô tả
+            String description = request.getParameter("description");
 
             if (itemIDStr == null || itemIDStr.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "Missing item ID.");
@@ -153,10 +153,11 @@ public class EditItemServlet extends HttpServlet {
             Item updatedItem = new Item();
             updatedItem.setItemID(itemID);
             updatedItem.setName(name.trim());
-            updatedItem.setDescription(description == null ? "" : description.trim()); // 🔹 Lưu mô tả
+            updatedItem.setDescription(description == null ? "" : description.trim());
             updatedItem.setCategoryID(categoryID);
             updatedItem.setStatus(status);
             updatedItem.setImagePath(imagePath);
+            System.out.println(">>> Debug Status: " + request.getParameter("status"));
 
             boolean updated = dao.updateItem(updatedItem, sizePriceMap);
 
