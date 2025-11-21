@@ -23,15 +23,20 @@ public class MenuPageServlet extends HttpServlet {
         // ✅ Nếu user vừa thanh toán → reset toàn bộ session
         String resetSession = request.getParameter("resetSession");
         if ("true".equals(resetSession)) {
-            HttpSession oldSession = request.getSession(false);
-            if (oldSession != null) {
-                oldSession.invalidate();
-            }
-            HttpSession newSession = request.getSession(true);
-            newSession.setAttribute("orderCode", generateOrderCode());
-            response.sendRedirect("MenuPage");
-            return;
-        }
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+        session.setAttribute("orderCode", generateOrderCode());
+        session.removeAttribute("cartData");
+        session.removeAttribute("voucherMessage");
+        session.removeAttribute("voucherColor");
+        session.removeAttribute("discountType");
+        session.removeAttribute("discountValue");
+        // các dữ liệu khác cần reset
+    }
+    response.sendRedirect("MenuPage");
+    return;
+}
+
 
         HttpSession session;
         boolean fromPayment = "true".equals(request.getParameter("fromPayment"));
