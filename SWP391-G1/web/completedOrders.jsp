@@ -13,7 +13,7 @@
     #completedOrdersSection td {
         border: 1px solid #ccc;
         text-align: center;
-        white-space: nowrap; /* không xuống dòng để tiết kiệm width */
+        white-space: nowrap;
     }
 
     #completedOrdersSection th {
@@ -39,32 +39,63 @@
         border-radius: 4px;
         font-size: 14px;
         cursor: pointer;
-        padding: 10px
+        padding: 10px;
     }
 
     #completedOrdersSection button:hover {
         background-color: #2563eb;
     }
+
+    .item-table {
+        width: 90%;
+        margin: 8px auto;
+        border-collapse: collapse;
+    }
+
+    .item-table th, .item-table td {
+        border: 1px solid #ddd;
+        padding: 6px;
+    }
+
+    .item-table th {
+        background-color: #f0f0f0;
+    }
 </style>
 
 <div id="completedOrdersSection">
     <form id="completedForm">
-        <table border="1">
+        <table>
             <tr>
                 <th>Select</th>
                 <th>Mã đơn hàng</th>
-                <th>Status</th>
             </tr>
             <c:forEach var="o" items="${completedOrders}">
-                <tr>
-                    <td><input type="checkbox" name="selectedOrders" value="${o.orderID}" /></td>
-                    <td>${o.orderCode}</td>
-                    <td>Đang chờ...</td>
-                </tr>
-            </c:forEach>
+    <tr>
+        <td><input type="checkbox" name="selectedOrders" value="${o.orderID}" /></td>
+        <td>
+            ${o.orderCode}
+            <c:if test="${not empty o.items}">
+                <table class="item-table">
+                    <tr>
+                        <th>Tên món</th>
+                        <th>Kích cỡ</th>
+                        <th>Số lượng</th>
+                        
+                    </tr>
+                    <c:forEach var="item" items="${o.items}">
+                        <tr>
+                            <td>${item.itemName}</td>
+                            <td>${item.itemSize}</td>
+                            <td>${item.quantity}</td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </c:if>
+        </td>
+    </tr>
+</c:forEach>
+
         </table>
         <button type="button" onclick="confirmServed()">Xác nhận đã phục vụ</button>
     </form>
 </div>
-
-
