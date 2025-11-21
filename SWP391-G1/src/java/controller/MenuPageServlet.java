@@ -2,17 +2,17 @@ package controller;
 
 import dal.ItemSizePriceDAO;
 import dal.PromotionDAO;
-import dal.CategoryDAO; // ✅ Thêm import này
+import dal.CategoryDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import model.MenuItem;
 import model.ItemSizePrice;
 import model.Promotion;
-import model.Category; // ✅ Thêm import này
-import java.util.concurrent.ThreadLocalRandom;
+import model.Category;
 
 @WebServlet(name = "MenuPageServlet", urlPatterns = {"/MenuPage"})
 public class MenuPageServlet extends HttpServlet {
@@ -23,15 +23,20 @@ public class MenuPageServlet extends HttpServlet {
         // ✅ Nếu user vừa thanh toán → reset toàn bộ session
         String resetSession = request.getParameter("resetSession");
         if ("true".equals(resetSession)) {
-            HttpSession oldSession = request.getSession(false);
-            if (oldSession != null) {
-                oldSession.invalidate();
-            }
-            HttpSession newSession = request.getSession(true);
-            newSession.setAttribute("orderCode", generateOrderCode());
-            response.sendRedirect("MenuPage");
-            return;
-        }
+    HttpSession session = request.getSession(false);
+    if (session != null) {
+        session.setAttribute("orderCode", generateOrderCode());
+        session.removeAttribute("cartData");
+        session.removeAttribute("voucherMessage");
+        session.removeAttribute("voucherColor");
+        session.removeAttribute("discountType");
+        session.removeAttribute("discountValue");
+        // các dữ liệu khác cần reset
+    }
+    response.sendRedirect("MenuPage");
+    return;
+}
+
 
         HttpSession session;
         boolean fromPayment = "true".equals(request.getParameter("fromPayment"));
@@ -81,9 +86,9 @@ public class MenuPageServlet extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
 
         // --- Lấy danh sách category ---
-CategoryDAO categoryDAO = new CategoryDAO();
-List<Category> categoryList = categoryDAO.getAllCategories();
-request.setAttribute("categoryList", categoryList);
+        CategoryDAO categoryDAO = new CategoryDAO();
+        List<Category> categoryList = categoryDAO.getAllCategories();
+        request.setAttribute("categoryList", categoryList);
 
         // 🔹 Mã đơn hàng nếu chưa có
         if (session.getAttribute("orderCode") == null) {
@@ -104,10 +109,16 @@ request.setAttribute("categoryList", categoryList);
             session.removeAttribute("voucherColor");
         }
 
-        // ✅ Giữ lại giỏ hàng khi quay lại
+        // ✅ Giữ lại giỏ hàng khi quay lại → deep copy để tránh all items giống nhau
         Object cartData = session.getAttribute("cartData");
-        if (cartData != null) {
-            request.setAttribute("cartData", cartData);
+        if (cartData != null && cartData instanceof List) {
+            List<Map<String, Object>> originalList = (List<Map<String, Object>>) cartData;
+            List<Map<String, Object>> cartListCopy = new ArrayList<>();
+            for (Map<String, Object> item : originalList) {
+                Map<String, Object> newItem = new HashMap<>(item); // copy từng map
+                cartListCopy.add(newItem);
+            }
+            request.setAttribute("cartData", cartListCopy);
         }
 
         // ✅ Chuyển sang JSP

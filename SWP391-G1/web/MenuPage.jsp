@@ -393,10 +393,16 @@
         </header>
         <main style="display: flex; gap: 30px;">
             <!-- 🔹 Cột trái: danh sách đơn --><div>
-                <h4>Danh sách đơn hàng cần phục vụ </h4>
-                     <div id="completed-orders" class="orders-container" style="flex: 1; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow-y: auto;">
-            </div>
-            </div>
+    <h4>Danh sách đơn hàng cần phục vụ </h4>
+    <div id="completed-orders" class="orders-container" 
+         style="flex: 1; background: #fff; padding: 20px; border-radius: 15px; 
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+                max-height: 400px;   /* chiều cao cố định */
+                overflow-y: auto;">
+        <%-- Bảng completedOrders sẽ được nhúng ở đây --%>
+    </div>
+</div>
+
            
 
             <!-- 🔹 Cột phải: menu -->
