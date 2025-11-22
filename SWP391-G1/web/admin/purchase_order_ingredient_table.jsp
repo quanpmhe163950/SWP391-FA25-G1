@@ -11,6 +11,7 @@
         <th></th>
         <th>Tên nguyên liệu</th>
         <th>Đơn vị cơ bản</th>
+        <th>Giá gốc (tham khảo)</th>
         <th>Giá nhập</th>
         <th>Đơn vị nhập</th>
         <th>SL cơ bản/ Đơn vị nhập</th>
@@ -25,20 +26,18 @@
                 <td><input class="ing-check" type="checkbox" value="<%= ing.getId() %>"></td>
                 <td><%= ing.getName() %></td>
                 <td><%= ing.getUnit() %></td>
+                <td><%= String.format("%,.0f", ing.getPrice()) %> VND</td>
 
                 <!-- ✅ Cho phép nhập giá nhập -->
                 <td>
-    <input 
-        type="number" 
-        id="price_<%= ing.getId() %>" 
-        value="<%= ing.getPrice() %>" 
-        min="0" 
-        step="1000" 
-        class="price-input"
-        style="width:80px;"
-    />
-</td>
-
+                    <input 
+                        type="number"
+                        id="price_<%= ing.getId() %>"
+                        value="<%= ing.getPrice() %>"
+                        min="0"
+                        step="500"
+                        style="width:100px; text-align:right;">
+                </td>
 
                 <td>
                     <select id="unit_<%= ing.getId() %>">

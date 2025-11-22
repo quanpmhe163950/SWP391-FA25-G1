@@ -9,6 +9,7 @@
       <th style="width: 70px;">ID</th>
       <th>Tên nguyên liệu</th>
       <th>Đơn vị</th>
+      <th style="width: 160px;">Giá cung cấp (VNĐ)</th>
     </tr>
   </thead>
   <tbody id="currentIngredientBody">
@@ -19,6 +20,11 @@
   <td>${i.id}</td>
   <td>${i.name}</td>
   <td>${i.unit}</td>
+
+            <td>
+              <input type="number" class="form-control form-control-sm price-input"
+                     value="${i.price}" min="0" step="100">
+            </td>
           </tr>
         </c:forEach>
       </c:when>
