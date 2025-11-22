@@ -68,7 +68,6 @@
             <tr>
                 <th>Select</th>
                 <th>Mã đơn hàng</th>
-                <th>Status</th>
             </tr>
             <c:forEach var="o" items="${completedOrders}">
                <tr>
