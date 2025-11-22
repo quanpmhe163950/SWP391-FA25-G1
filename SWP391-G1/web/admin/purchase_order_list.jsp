@@ -167,15 +167,6 @@
 
                 &nbsp;&nbsp;
 
-                <label>Trạng thái:</label>
-                <select name="status" style="padding: 6px;">
-                    <option value="">-- Tất cả --</option>
-                    <option value="pending"   <%= "pending".equals(statusFilter) ? "selected" : "" %>>Đã tạo</option>
-                    <option value="partial"   <%= "partial".equals(statusFilter) ? "selected" : "" %>>Nhận 1 phần</option>
-                    <option value="received"  <%= "received".equals(statusFilter) ? "selected" : "" %>>Nhận hết</option>
-                    <option value="cancelled" <%= "cancelled".equals(statusFilter) ? "selected" : "" %>>Đã hủy</option>
-                </select>
-
                 &nbsp;&nbsp;
 
                 <button class="btn" type="submit">Tìm kiếm</button>
@@ -193,7 +184,7 @@
                     <th>Nhà cung cấp</th>
                     <th>Người tạo</th>
                     <th>Ngày tạo</th>
-                    <th>Ngày nhận</th>
+                    
                     <th>Trạng thái</th>
                     <th style="width:120px">Hành động</th>
                 </tr>
@@ -216,12 +207,11 @@
                     <td><%= supplierName %></td>
                     <td><%= o.getCreatedBy() %></td>
                     <td><%= o.getOrderDate() %></td>
-                    <td><%= o.getReceiveDate() == null ? "-" : o.getReceiveDate() %></td>
 
                     <td class="status-<%= o.getStatus() %>">
                         <% if ("pending".equals(o.getStatus())) { %>Đã tạo
                         <% } else if ("partial".equals(o.getStatus())) { %>Nhận 1 phần
-                        <% } else if ("received".equals(o.getStatus())) { %>Đã nhận hết
+                        <% } else if ("received".equals(o.getStatus())) { %>Đã nhận
                         <% } else { %>Đã hủy <% } %>
                     </td>
 
