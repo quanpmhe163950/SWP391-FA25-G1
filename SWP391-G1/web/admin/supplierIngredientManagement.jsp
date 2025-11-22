@@ -233,32 +233,34 @@ function openIngredientModal(supplierID, supplierName) {
 
                 if (Array.isArray(data) && data.length > 0) {
                     let html = `
-                        <table class="table table-bordered table-striped align-middle">
-                            <thead class="table-secondary text-center">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Tên nguyên liệu</th>
-                                    <th>Đơn vị</th>
-                                    <th>Giá</th>
-                                    <th>Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-                    data.forEach((item, index) => {
-                        html += `
-                            <tr data-ingredient-id="${item.id}">
-                                <td>${index + 1}</td>
-                                <td>${item.name}</td>
-                                <td>${item.unit || '-'}</td>
-                                <td><input type="number" class="form-control price-input" value="${item.price || ''}"></td>
-                                <td>${item.active ? '<span class="badge bg-success">Hoạt động</span>' : '<span class="badge bg-secondary">Ngừng</span>'}</td>
-                            </tr>
-                        `;
-                    });
-                    html += '</tbody></table>';
-                    $('#ingredientTables').html(html);
-                } else {
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-secondary text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Tên nguyên liệu</th>
+                    <th>Đơn vị</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    data.forEach((item, index) => {
+        html += `
+            <tr data-ingredient-id="${item.id}" data-name="${item.name}" data-unit="${item.unit}">
+                <td>${index + 1}</td>
+                <td>${item.name}</td>
+                <td>${item.unit || '-'}</td>
+                <td class="text-center">
+                    <button class="btn btn-outline-danger btn-sm remove-ingredient-btn">Xóa</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table>';
+    $('#ingredientTables').html(html);
+} 
+ else {
                     $('#ingredientTables').html(`<div class="text-center p-3 text-muted">Không có nguyên liệu nào.</div>`);
                 }
             } catch (e) {
@@ -288,20 +290,14 @@ function openEditSupplierModal(id, name, phone, email, address, active) {
 // ======================= LƯU NGUYÊN LIỆU =======================
 $(document).on('click', '#confirmSaveBtn', function () {
     const data = [];
-
-    $('#ingredientTables tr[data-ingredient-id]').each(function () {
+// 🔥 CHỈ LẤY DÒNG TRONG BẢNG TRÊN
+    $('#currentIngredientBody tr[data-ingredient-id]').each(function () {
         const id = $(this).data('ingredient-id');
-        const price = $(this).find('.price-input').val();
-
-        if (!price) {
-            alert('Vui lòng nhập giá cho tất cả nguyên liệu.');
-            return false;
-        }
-        data.push({ id, price });
+        data.push({ id });
     });
 
     if (data.length === 0) {
-        alert('Chưa có nguyên liệu để lưu.');
+         alert('Chưa có nguyên liệu nào để lưu.');
         return;
     }
 
@@ -392,7 +388,6 @@ $(document).on("click", ".add-ingredient-btn", function () {
     .append(
       $("<td>").append(`
         <div class="input-group input-group-sm">
-          <input type="number" class="form-control price-input" placeholder="Nhập giá" min="0" step="100">
           <button class="btn btn-outline-danger remove-ingredient-btn" type="button">Xóa</button>
         </div>
       `)

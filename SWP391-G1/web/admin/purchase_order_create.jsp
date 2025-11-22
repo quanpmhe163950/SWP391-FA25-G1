@@ -90,29 +90,31 @@
                 .catch(err => console.error("Lỗi load nguyên liệu:", err));
         }
 
-        // Gom dữ liệu nguyên liệu để gửi trong form
-        function collectSelectedIngredients() {
-            const checkboxes = document.querySelectorAll(".ing-check:checked");
-            const selected = [];
+         // Gom dữ liệu nguyên liệu để gửi trong form
+    function collectSelectedIngredients() {
+        const checkboxes = document.querySelectorAll(".ing-check:checked");
+        const selected = [];
 
-            checkboxes.forEach(cb => {
-                const id = cb.value;
-                const unitType = document.getElementById("unit_" + id)?.value || "";
-                const subQty = document.getElementById("sub_" + id)?.value || "0";
-                const unitQty = document.getElementById("qty_" + id)?.value || "0";
-                const price = document.getElementById("price_" + id)?.textContent || "0";
+        checkboxes.forEach(cb => {
+            const id = cb.value;
+            const unitType = document.getElementById("unit_" + id)?.value || "";
+            const subQty = document.getElementById("sub_" + id)?.value || "0";
+            const unitQty = document.getElementById("qty_" + id)?.value || "0";
 
-                selected.push({
-                    ingredientID: id,
-                    unitType: unitType,
-                    subQuantityPerUnit: subQty,
-                    unitQuantity: unitQty,
-                    pricePerUnit: price
-                });
+            // 🔥 ĐÃ SỬA: lấy từ input hidden
+            const price = document.getElementById("price_" + id)?.value || "0";
+
+            selected.push({
+                ingredientID: id,
+                unitType: unitType,
+                subQuantityPerUnit: subQty,
+                unitQuantity: unitQty,
+                pricePerUnit: price
             });
+        });
 
-            return selected;
-        }
+        return selected;
+    }
 
         // Chuyển object sang JSON string trước khi submit form
         function beforeSubmit() {
@@ -139,12 +141,6 @@
             return false;
         }
     }
-
-    // Gắn JSON vào hidden input
-    document.getElementById("itemsData").value = JSON.stringify(items);
-    return true;
-}
-
 
     // ✅ Nếu hợp lệ, gắn dữ liệu vào hidden input
     document.getElementById("itemsData").value = JSON.stringify(items);
