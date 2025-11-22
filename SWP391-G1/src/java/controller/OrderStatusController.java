@@ -33,11 +33,11 @@ public class OrderStatusController extends HttpServlet {
             e.printStackTrace();
             order.setItems(new ArrayList<OrderItem>());
         }
-        
+   
+}
+         
     request.setAttribute("completedOrders", completedOrders);
     request.getRequestDispatcher("/completedOrders.jsp").forward(request, response);
-}
-
     }
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
