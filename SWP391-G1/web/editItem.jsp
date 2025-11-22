@@ -3,7 +3,6 @@
 <%@page import="model.ItemSizePrice"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,14 +18,12 @@
                 height: 100vh;
                 overflow: hidden;
             }
-
             /* ✅ Main container */
             .main-container {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
             }
-
             /* ✅ Navbar */
             .navbar {
                 background-color: white;
@@ -416,4 +413,3 @@
 
     </body>
 </html>
-
