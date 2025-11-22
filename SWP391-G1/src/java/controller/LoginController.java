@@ -36,7 +36,10 @@ public class LoginController extends HttpServlet {
         }
 
         User user = userDAO.findByUsername(username);
-
+        if (!user.isActive()){
+             request.setAttribute("error", "Your account is not allowed to log into the system!");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        }
         if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
             HttpSession session = request.getSession();
             session.setAttribute("account", user);
@@ -44,7 +47,7 @@ public class LoginController extends HttpServlet {
             // Tạo token ngẫu nhiên để authorize
             String token = UUID.randomUUID().toString();
             session.setAttribute("authToken", token);
-
+            
             // Redirect theo role
             if (user.getRoleID() == 1) {
                 response.sendRedirect("admin/home.jsp");

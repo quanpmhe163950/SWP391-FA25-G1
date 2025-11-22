@@ -108,10 +108,6 @@ select { min-width:160px; }
             <form id="addRecipeForm" method="post" action="<%= request.getContextPath() %>/admin/recipe?action=addRecipe">
                 <input type="hidden" id="menuItemId" name="itemSizePriceId">
                 <div>
-                    <label>Mô tả:</label><br>
-                    <textarea name="description" rows="3"></textarea>
-                </div>
-                <div>
                     <label>Chọn nguyên liệu:</label>
                     <div class="search-bar">
                         <input type="text" id="ingredientSearch" placeholder="Tìm nguyên liệu..." onkeyup="filterAddIngredients()">
@@ -154,10 +150,7 @@ select { min-width:160px; }
             <h2>Sửa công thức</h2>
             <form id="editRecipeForm" method="post" action="<%= request.getContextPath() %>/admin/recipe?action=updateRecipe">
                 <input type="hidden" id="editRecipeId" name="recipeId">
-                <div>
-                    <label>Mô tả:</label><br>
-                    <textarea id="editDescription" name="description" rows="3" required></textarea>
-                </div>
+                
                 <h3>Nguyên liệu hiện có</h3>
                 <table>
                     <thead>

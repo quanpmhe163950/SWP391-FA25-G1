@@ -75,6 +75,7 @@ public class UsersDAO {
                 u.setEmail(rs.getString("email"));
                 u.setPhone(rs.getString("phone"));
                 u.setCreateDate(rs.getTimestamp("createDate"));
+                u.setActive(rs.getBoolean("IsActive"));
                 return u;
             }
 
