@@ -3,6 +3,7 @@
 <%@page import="model.ItemSizePrice"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
+<%@page import="model.Category"%>
 <!DOCTYPE html>
 <html>
     <head>
