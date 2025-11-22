@@ -30,14 +30,17 @@
 
                 <!-- ✅ Cho phép nhập giá nhập -->
                 <td>
-                    <input 
-                        type="number"
-                        id="price_<%= ing.getId() %>"
-                        value="<%= ing.getPrice() %>"
-                        min="0"
-                        step="500"
-                        style="width:100px; text-align:right;">
-                </td>
+                     <input 
+        type="number" 
+        id="price_<%= ing.getId() %>" 
+        value="<%= ing.getPrice() %>" 
+        min="0" 
+        step="1000" 
+        class="price-input"
+        style="width:80px;"
+    />
+</td>
+
 
                 <td>
                     <select id="unit_<%= ing.getId() %>">
@@ -46,7 +49,6 @@
                         <option value="bao">Bao</option>
                         <option value="chai">Chai</option>
                         <option value="hộp">Hộp</option>
-                        <option value="<%= ing.getUnit() %>"><%= ing.getUnit() %></option>
                     </select>
                 </td>
 

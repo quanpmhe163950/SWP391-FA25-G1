@@ -573,9 +573,9 @@ Map<MenuItem, List<ItemSizePrice>> menuWithSizes =
                     <% } %>
                     <!-- 🔹 Các hình thức thanh toán -->
                     <div class="payment-icons">
-                        <img src="images/QRCodeimg.png" onclick="selectPayment(this, 'QR Code')">
+                        
                         <img src="images/VNPay QR là gì_ Những tiện ích khi thanh toán qua VNPay QR.jpg" onclick="selectPayment(this, 'VNPay')">
-                        <img src="images/creditcardimg.png" onclick="selectPayment(this, 'Visa/MasterCard')">
+
                         <img src="images/cashimg.png" onclick="selectPayment(this, 'Tiền mặt')">
                     </div>
                     <button class="checkout-btn" onclick="checkout()">Thanh Toán</button>

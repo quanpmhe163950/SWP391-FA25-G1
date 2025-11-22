@@ -122,7 +122,6 @@ public class SupplierIngredientController extends HttpServlet {
                             String key = kv[0].replaceAll("\"", "").trim();
                             String val = kv[1].replaceAll("\"", "").trim();
                             if (key.equals("id")) id = Integer.parseInt(val);
-                            if (key.equals("price")) price = Double.parseDouble(val);
                         }
                         dao.addOrUpdateSupplierIngredient(supplierID, id, price);
                     }
