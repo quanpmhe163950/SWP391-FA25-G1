@@ -22,6 +22,7 @@ public class RecipeDAO {
                    mi.ItemID AS MenuItemID,
                    mi.Name AS ItemName,
                    mi.Description,
+                   mi.Category,
                    mi.Status AS MenuStatus,
                    mi.ImagePath,
                    mi.CategoryID
@@ -46,6 +47,7 @@ public class RecipeDAO {
                 mi.setId(rs.getInt("MenuItemID")); // ItemID đúng
                 mi.setName(rs.getString("ItemName"));
                 mi.setDescription(rs.getString("Description"));
+                mi.setCategory(rs.getString("Category"));
                 mi.setStatus(rs.getString("MenuStatus"));
                 mi.setImagePath(rs.getString("ImagePath"));
                 mi.setCategoryId(rs.getInt("CategoryID"));
@@ -74,6 +76,7 @@ public class RecipeDAO {
                    mi.ItemID AS MenuItemID,
                    mi.Name AS ItemName,
                    mi.Description,
+                   mi.Category,
                    mi.Status AS MenuStatus,
                    mi.ImagePath,
                    mi.CategoryID

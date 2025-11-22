@@ -13,7 +13,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Order;
-import model.OrderItem;
 
 /**
  *
@@ -78,42 +77,6 @@ public void updateOrderStatus(int orderID, String newStatus) {
     } catch (SQLException e) {
         e.printStackTrace();
     }
-}
-
-public List<OrderItem> getItemsByOrderId(int orderId) throws Exception {
-    List<OrderItem> list = new ArrayList<>();
-    
-    String sql = "SELECT oi.OrderItemID, oi.OrderID, oi.ItemID, " +
-                 "       mi.Name AS ItemName, isp.Size AS ItemSize, " +
-                 "       oi.Quantity, oi.Price " +
-                 "FROM OrderItem oi " +
-                 "JOIN MenuItem mi ON oi.ItemID = mi.ItemID " +
-                 "JOIN ItemSizePrice isp ON oi.ItemID = isp.ItemID AND oi.Price = isp.Price " +
-                 "WHERE oi.OrderID = ?";
-
-    try (Connection conn = DBContext.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-
-        ps.setInt(1, orderId);
-
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                OrderItem item = new OrderItem();
-
-                item.setOrderItemID(rs.getInt("OrderItemID"));
-                item.setOrderID(rs.getInt("OrderID"));
-                item.setItemID(rs.getInt("ItemID"));
-                item.setQuantity(rs.getInt("Quantity"));
-                item.setPrice(rs.getDouble("Price"));
-                item.setItemName(rs.getString("ItemName"));
-                item.setItemSize(rs.getString("ItemSize"));
-
-                list.add(item);
-            }
-        }
-    }
-
-    return list;
 }
 
 }

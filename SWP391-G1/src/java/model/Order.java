@@ -1,7 +1,6 @@
 package model;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 public class Order {
 
@@ -12,17 +11,6 @@ public class Order {
     private String status;
     private int promoID;
     private String orderCode;
-    
-    private List<OrderItem> items;
-
-public List<OrderItem> getItems() {
-    return items;
-}
-
-public void setItems(List<OrderItem> items) {
-    this.items = items;
-}
-
 
     public Order() {
     }
