@@ -6,35 +6,161 @@
         <meta charset="UTF-8">
         <title>Tài khoản khách hàng</title>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
+            :root {
+                --primary: #ff6600;
+                --primary-dark: #e55a00;
+                --text-dark: #333;
+                --success-green: #028F46;
+                --bg-light: #fff8f0;
             }
 
+            /* ===== RESET + FONT ===== */
+            body {
+                font-family: 'Poppins', sans-serif;
+                margin: 0;
+                padding: 0;
+                background: #f8f8f8;
+                color: var(--text-dark);
+                line-height: 1.6;
+                font-weight: 600;
+            }
+
+            /* ===== NAVBAR ===== */
             .navbar {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 15px 30px;
-                background: #f8f8f8;
-                border-bottom: 1px solid #ddd;
+                padding: 16px 40px; /* giữ nguyên như homepage */
+                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+                color: white;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             }
+
             .navbar img {
-                display: block;
+                height: auto; /* giữ nguyên logo homepage */
+                width: 200px;
+                transition: transform 0.3s ease;
             }
+
+            .navbar img:hover {
+                transform: scale(1.05);
+            }
+
             .user-info {
                 display: flex;
                 align-items: center;
-                font-size: 18px;
+                font-size: 1em; /* giữ vừa phải, giống homepage */
+                font-weight: 700;
+                gap: 10px;
             }
 
+            .user-info span {
+                color: white;
+            }
+
+            /* ===== ACCOUNT + MENU LEFT ===== */
             .account-container {
                 display: flex;
-                gap: 20px;
-                margin-top: 20px;
-                font-size: 20px;
+                gap: 25px;
+                max-width: 1200px;
+                margin: 30px auto 60px auto;
+                padding: 0 20px;
+                align-items: flex-start;
             }
+
+            .menu-left {
+                width: 300px;
+                background: #fff;
+                border-radius: 16px;
+                padding: 25px 20px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+                display: flex;
+                flex-direction: column;
+                gap: 25px;
+            }
+
+            /* ===== ACCOUNT INFO TRONG MENU LEFT ===== */
+            .menu-left .account-info {
+                text-align: center;
+            }
+
+            .menu-left .account-info h3 {
+                font-size: 1.6em;
+                font-weight: 800;
+                margin-bottom: 10px;
+                color: var(--primary);
+            }
+
+            .menu-left .account-info .account-name {
+                font-size: 1.4em;
+                font-weight: 700;
+                color: var(--success-green);
+            }
+
+            /* ===== MENU LINKS ===== */
+            .menu-left .edit-info {
+                display: block;
+                padding: 14px 12px;
+                font-size: 1.15em;
+                font-weight: 700;
+                color: var(--primary);
+                border-radius: 8px;
+                transition: all 0.25s ease;
+                text-decoration: none;
+            }
+
+            .menu-left .edit-info:hover,
+            .menu-left .edit-info.active {
+                background-color: var(--bg-light);
+                padding-left: 20px;
+                font-weight: 800;
+            }
+
+            /* ===== CONTENT RIGHT ===== */
+            .content-right {
+                flex: 1;
+                min-height: 400px;
+                background: #fff;
+                border-radius: 16px;
+                padding: 35px 40px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+                font-weight: 600;
+            }
+
+            .content-right h3 {
+                font-size: 1.6em;
+                font-weight: 800;
+                color: var(--primary);
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            /* ===== TABLE THÔNG TIN ===== */
+            table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 18px;
+                margin-top: 10px;
+            }
+
+            td {
+                padding: 10px;
+                vertical-align: middle;
+                font-size: 1.15em;
+                font-weight: 600;
+            }
+
+            .label-col {
+                width: 30%;
+                font-weight: 700;
+                color: var(--primary);
+            }
+
+            .value-col {
+                width: 40%;
+            }
+
+            /* ===== DROPDOWN ===== */
             .dropdown {
                 position: relative;
                 display: inline-block;
@@ -43,170 +169,120 @@
             .dropdown-content {
                 display: none;
                 position: absolute;
-                background-color: #f9f9f9;
-                min-width: 160px;
-                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                background-color: #ffffff;
+                min-width: 200px;
+                box-shadow: 0 8px 20px rgba(255, 102, 0, 0.25);
                 z-index: 1;
-                border-radius: 4px;
+                border-radius: 10px;
+                border: 1px solid #ffcc99;
                 right: 0;
+                top: 100%;
             }
 
             .dropdown-content a {
-                color: black;
-                padding: 12px 16px;
+                color: #333;
+                padding: 14px 16px;
                 text-decoration: none;
                 display: block;
-                font-family: Arial, sans-serif;
+                font-size: 1.1em;
+                font-weight: 600;
             }
 
             .dropdown-content a:hover {
-                background-color: #fff0e6;
-                color: #ff6600;
+                background-color: var(--bg-light);
+                color: var(--primary);
+                padding-left: 22px;
             }
 
             .dropdown-content.show {
                 display: block;
             }
 
-            .menu-left {
-                width: 200px;
-                background: #fafafa;
-                border: 1px solid #ddd;
-                border-radius: 6px;
-                padding: 15px;
-            }
-            .edit-info {
-                display: block;
-                padding: 8px 0;
-                font-size: 25px;
-                color: #ff6600; /* ĐÃ ĐỔI */
-                cursor: pointer;
-                border-bottom: 1px solid #eee;
-                margin: 20px auto;
-                transition: all 0.2s ease;
-            }
-            .edit-info:hover {
-                color: #e55a00;
-                padding-left: 8px;
-            }
-            .edit-info:last-child {
-                border-bottom: none;
-            }
-
-            .content-right {
-                flex: 1;
-                min-height: 300px;
-                border-left: 1px solid #ddd;
-                padding-left: 20px;
-            }
-            .content {
-                padding: 10px;
-                font-size: 20px;
-            }
-            .edit-btn {
-                float: right;
-                cursor: pointer;
-                font-size: 18px;
-                color: #ff6600; /* ĐÃ ĐỔI */
-                text-decoration: underline;
-                font-weight: 600;
-            }
-            .edit-btn:hover {
-                color: #e55a00;
-            }
-            table {
-                width: 100%;
-                border-collapse: separate;
-                border-spacing: 20px;
-            }
-            td {
-                padding: 10px;
-                vertical-align: middle;
-            }
-            .label-col {
-                width: 30%;
-                font-weight: bold;
-            }
-            .value-col {
-                width: 40%;
-            }
-            .action-col {
-                width: 30%;
-                text-align: right;
-            }
+            /* ===== FOOTER ===== */
             footer {
-                background: #222;
-                color: #ccc;
+                background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+                color: #fff;
                 text-align: center;
-                padding: 15px;
-                font-size: 0.95em;
-                margin-top: 20px;
-            }
-            .edit-info.active {
-                color: #028F46; 
-                font-weight: bold;
-                border-left: 4px solid #028F46;
-                padding-left: 8px;
-                background: #fff8f0;
+                padding: 20px 0;
+                font-size: 1.05em;
             }
 
-           
-            .user-info span {
-                color: #ff6600;
-                font-weight: 600;
+            /* ===== RESPONSIVE ===== */
+            @media (max-width: 768px) {
+                .account-container {
+                    flex-direction: column;
+                    gap: 20px;
+                    padding: 0 15px;
+                }
+                .menu-left {
+                    width: 100%;
+                    padding: 20px;
+                }
+                .content-right {
+                    padding: 25px 20px;
+                }
+                .navbar {
+                    flex-direction: column;
+                    padding: 15px 20px;
+                }
+                .navbar img {
+                    height: 60px; /* giữ nguyên */
+                }
+
+            }
+            .dropdown img{
+                width: 60px;
+                height: auto;
             }
 
-           
-            .account-title span {
-                color: #ff6600;
-                font-weight: bold;
-            }
         </style>
+
     </head>
-    <body onload="showInformation()">
+    <body>
 
         <div class="navbar">
-            <div><img src="images/logo.jpg" alt="Logo" width="250"></div>
+            <div><img src="image/logonotbg.png" alt="Logo" width="250"></div>
             <div class="user-info">
                 <div class="dropdown">
                     <button style="background:none;border:none;padding:0;cursor:pointer;" type="button" onclick="toggleDropdown()">
-                        <img src="images/account.png" alt="User" width="40" style="margin-right:10px;">
+                        <img src="image/account.png" alt="User" width="40" style="margin-right:10px;">
                     </button>
                     <div id="dropdownMenu" class="dropdown-content">
-                        <a href="#">Tài Khoản</a>
-                        <a href="#">Đăng xuất</a>
+                        <a href="cusinfo">Tài Khoản</a>
+                        <a href="logout">Đăng xuất</a>
                     </div>
                 </div>
                 <span>${account.fullName}</span>
             </div>
         </div>
-
-        <table>
-            <tr>
-                <td>
-                    <h3 style="margin-left: 20px; font-size: 25px;">Tài khoản của</h3>
-                    <span style="color: #ff6600;margin-left: 20px; font-size: 25px;">${account.fullName}</span>
-                </td>
-
-            </tr>
-
-
-
-        </table> 
-
         <div class="account-container">
+            <!-- LEFT MENU: Account + Menu -->
             <div class="menu-left">
-                <a class="edit-info" href="cusinfor">Thông tin khách hàng</a>
-                <a class="edit-info"href="orderhistory">Lịch sử mua hàng</a>
-
-                <span class="edit-info" onclick="showVoucher()">Voucher của tôi</span>
-                <a class="edit-info" href="changepass">Đổi mật khẩu</a>
+                <!-- Phần Tài khoản -->
+                <div class="account-info">
+                    <h3>Tài khoản của</h3>
+                    <span class="account-name">${account.fullName}</span>
+                </div>
+                <!-- Menu điều hướng -->
+                
+                <a class="edit-info" href="${pageContext.request.contextPath}/cusinfo">Thông tin khách hàng</a>
+                <a class="edit-info" href="${pageContext.request.contextPath}/orderhistory">Lịch sử mua hàng</a>
+                <a class="edit-info" href="${pageContext.request.contextPath}/changepass">Đổi mật khẩu</a>
             </div>
 
+            <!-- RIGHT CONTENT -->
             <div class="content-right" id="contentArea">
-                <jsp:include page="${pageContent}" />
-            </div>
-        </div>
+                <c:choose>
+                    <c:when test="${not empty pageContent}">
+                        <jsp:include page="${pageContent}" />
+                    </c:when>
+                    <c:otherwise>
+                        <!-- MẶC ĐỊNH: HIỂN THỊ THÔNG TIN KHÁCH HÀNG -->
+                        <jsp:include page="CusInfo.jsp" />
+                    </c:otherwise>
+                </c:choose>
+            </div>        </div>
+
 
 
         <script>
@@ -224,9 +300,7 @@
 //            function showHistory() {
 //                alert("Chưa làm cái này");
 //            }
-            function showVoucher() {
-                alert("Chưa làm cái này");
-            }
+
             function changePassword() {
                 fetch('changepass')
                         .then(response => response.text())
