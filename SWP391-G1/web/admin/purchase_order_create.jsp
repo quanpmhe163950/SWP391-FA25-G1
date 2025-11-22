@@ -127,24 +127,15 @@
     const items = collectSelectedIngredients();
 
     if (items.length === 0) {
-        alert("⚠️ Vui lòng chọn ít nhất một nguyên liệu!");
-        document.getElementById("ingredientArea").scrollIntoView({ behavior: "smooth", block: "center" });
+        alert("⚠️ Vui lòng chọn ít nhất một nguyên liệu để tạo đơn hàng!");
+        
+        // Scroll đến phần nguyên liệu để user thấy chỗ cần chọn
+        const ingredientArea = document.getElementById("ingredientArea");
+        if (ingredientArea) {
+            ingredientArea.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
         return false;
     }
-
-    // 🔥 Check giá nhập > 0
-    for (let item of items) {
-        if (!item.pricePerUnit || Number(item.pricePerUnit) <= 0) {
-            alert("⚠️ Giá nhập của nguyên liệu phải > 0!");
-            return false;
-        }
-    }
-
-    // Gắn JSON vào hidden input
-    document.getElementById("itemsData").value = JSON.stringify(items);
-    return true;
-}
-
 
     // ✅ Nếu hợp lệ, gắn dữ liệu vào hidden input
     document.getElementById("itemsData").value = JSON.stringify(items);

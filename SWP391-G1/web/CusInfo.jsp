@@ -1,3 +1,8 @@
+<%-- 
+    Document   : CusInfo
+    Created on : 14 thg 10, 2025, 14:25:16
+    Author     : ASUS
+--%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!-- CusInfo.jsp - CHỈ NỘI DUNG -->
