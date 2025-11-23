@@ -174,14 +174,15 @@ public class IngredientDAO extends DBContext {
         return list;
     }
     
-    public void increaseStock(int ingredientId, double amount) {
-    String sql = "UPDATE Ingredients SET quantity = quantity + ? WHERE id = ?";
+    public void increaseStock(int ingredientId, double amount, double oldreceivedSub) {
+    String sql = "UPDATE Ingredients SET quantity = quantity + ? - ? WHERE id = ?";
 
     try (Connection con = getConnection();
          PreparedStatement ps = con.prepareStatement(sql)) {
 
         ps.setDouble(1, amount);
-        ps.setInt(2, ingredientId);
+        ps.setDouble(2, oldreceivedSub);
+        ps.setInt(3, ingredientId);
         ps.executeUpdate();
 
     } catch (Exception e) {

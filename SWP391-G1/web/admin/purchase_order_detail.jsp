@@ -163,6 +163,7 @@
                             for (PurchaseOrderItem item : items) {
                                 double maxSub = item.getUnitQuantity();
                                 double receivedSub = item.getQuantityReceivedSubUnits();
+                                double oldreceivedSub = item.getQuantityReceivedSubUnits();
                                 double pricePerUnit = item.getPricePerUnit();
                                 double totalPrice = pricePerUnit * item.getQuantityReceivedSubUnits();
                                 orderTotal += totalPrice;
@@ -174,6 +175,10 @@
                             <td><%= ingredientUnits.get(item.getIngredientID()) %></td>
                             <td><%= item.getSubQuantityPerUnit() %></td>
                             <td><%= item.getUnitQuantity() %></td>
+                            <input type="hidden"
+       name="oldReceivedSubUnits[<%= item.getPurchaseOrderItemID() %>]"
+       value="<%= oldreceivedSub %>">
+
                             <td>
                                 <input
                                     type="number"

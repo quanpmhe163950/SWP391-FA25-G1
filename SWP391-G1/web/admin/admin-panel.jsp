@@ -69,10 +69,5 @@
     <a class="menu-item <%= currentPath.contains("/admin/blog") ? "active" : "" %>"
        href="${pageContext.request.contextPath}/admin/blog?action=listForHome">Blog</a>
 
-    <a class="menu-item <%= currentPath.contains("/ComboController") ? "active" : "" %>"
-       href="${pageContext.request.contextPath}/ComboController">Combo</a>
-    
-    <a class="menu-item <%= currentPath.contains("/admin/promotion") ? "active" : "" %>"
-       href="${pageContext.request.contextPath}/admin/promotion">Promotion</a>
 </div>
 
