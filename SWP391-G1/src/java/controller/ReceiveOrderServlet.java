@@ -40,7 +40,7 @@ public class ReceiveOrderServlet extends HttpServlet {
 
             // User nhập theo SubUnit
             String key = "receivedSubUnits[" + itemId + "]";
-
+            
             double receivedSubUnits = 0;
 
             if (paramMap.containsKey(key)) {
@@ -48,10 +48,18 @@ public class ReceiveOrderServlet extends HttpServlet {
                     receivedSubUnits = Double.parseDouble(paramMap.get(key)[0]);
                 } catch (Exception ignored) {}
             }
-
+            
+            double oldreceived = 0;
+            String oldkey = "oldReceivedSubUnits[" + itemId + "]";
+            if (paramMap.containsKey(oldkey)) {
+                try {
+                    oldreceived = Double.parseDouble(paramMap.get(oldkey)[0]);
+                } catch (Exception ignored) {}
+            }
+            
             // Quy đổi sang Unit
             double receivedUnits = receivedSubUnits * item.getSubQuantityPerUnit();
-
+            double oldreceivedUnits = oldreceived * item.getSubQuantityPerUnit();
             // Lưu xuống DB: subUnit và unit
             itemDAO.updateReceivedSubUnits(
                 itemId,
@@ -60,7 +68,7 @@ public class ReceiveOrderServlet extends HttpServlet {
             );
 
             // *** CẬP NHẬT KHO THEO UNIT ***
-            ingredientDAO.increaseStock(item.getIngredientID(), receivedUnits);
+            ingredientDAO.increaseStock(item.getIngredientID(), receivedUnits, oldreceivedUnits);
 
             // Xác định trạng thái đơn
             if (receivedSubUnits > 0) allZero = false;
@@ -70,8 +78,7 @@ public class ReceiveOrderServlet extends HttpServlet {
         // Cập nhật trạng thái đơn
         String newStatus;
         if (allZero) newStatus = "pending";
-        else if (allFull) newStatus = "received";
-        else newStatus = "partial";
+        else newStatus = "received";
 
         orderDAO.updateStatus(orderId, newStatus);
 
